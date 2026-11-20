@@ -1,52 +1,38 @@
-import { useRef } from 'react'
+import { useRef, type HTMLAttributes, type ReactNode } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
 gsap.registerPlugin(useGSAP)
 
+type Props = HTMLAttributes<HTMLElement> & { children: ReactNode; 'data-enter'?: boolean }
+
 /**
- * The hero's ground: a midnight-plum planet whose coral rim rises on load.
- * A soft light slides along the rim with the pointer. Pure CSS geometry,
- * animated with GSAP; rests in place under reduced motion.
+ * The hero section, painted with its own ground: a midnight-plum planet whose
+ * coral rim rises on load, a glow hugging the rim, and a soft light that follows
+ * the pointer along the horizon. All of it is the section's CSS background
+ * (`.eclipse` in index.css, driven by --rise and --mx), so there are no extra
+ * layers; it rests in place under reduced motion.
  */
-export default function Eclipse() {
-  const root = useRef<HTMLDivElement>(null)
+export default function EclipseSection({ children, className = '', ...props }: Props) {
+  const root = useRef<HTMLElement>(null)
 
   useGSAP(
     () => {
       const el = root.current
-      if (!el) return
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (reduce) return
-
-      gsap.from('.eclipse-body', { yPercent: 14, duration: 1.8, ease: 'expo.out' })
-      gsap.from('.eclipse-glow', { opacity: 0, scale: 0.85, duration: 2.2, ease: 'expo.out', delay: 0.2 })
-
-      const hero = el.closest('section') ?? window
-      const move = (e: Event) => {
-        const { clientX } = e as PointerEvent
-        const x = (clientX / window.innerWidth) * 100
-        gsap.to(el, { '--mx': `${x}%`, duration: 0.9, ease: 'power3.out', overwrite: true })
+      if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      gsap.fromTo(el, { '--rise': '160px' }, { '--rise': '0px', duration: 1.8, ease: 'expo.out' })
+      const move = (e: PointerEvent) => {
+        gsap.to(el, { '--mx': `${(e.clientX / window.innerWidth) * 100}%`, duration: 0.9, ease: 'power3.out', overwrite: 'auto' })
       }
-      hero.addEventListener('pointermove', move)
-      return () => hero.removeEventListener('pointermove', move)
+      el.addEventListener('pointermove', move)
+      return () => el.removeEventListener('pointermove', move)
     },
     { scope: root },
   )
 
   return (
-    <div
-      ref={root}
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 overflow-hidden [--mx:50%]"
-    >
-      {/* Glow sitting just above the horizon */}
-      <div className="eclipse-glow absolute top-[80%] left-1/2 h-[46vh] sm:top-[77%] w-[110vw] -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(255,107,91,0.32),rgba(255,107,91,0.08)_60%,transparent)]" />
-      {/* The planet: only its upper rim is ever on screen */}
-      <div className="eclipse-body absolute top-[82%] sm:top-[81%] left-1/2 aspect-square w-[max(170vw,1100px)] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_50%_0%,#2E1A36,#140A18_38%)] shadow-[inset_0_2px_0_0_#FF6B5B,inset_0_18px_40px_-24px_rgba(255,158,145,0.55),0_-24px_90px_-30px_rgba(255,107,91,0.7)]">
-        {/* Pointer-following light, clipped to the planet by its radius */}
-        <div className="absolute inset-0 rounded-full bg-[radial-gradient(28vw_14vw_at_var(--mx)_0%,rgba(255,158,145,0.5),transparent_70%)]" />
-      </div>
-    </div>
+    <section ref={root} {...props} className={`eclipse ${className}`}>
+      {children}
+    </section>
   )
 }

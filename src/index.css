@@ -180,13 +180,35 @@
 @layer components {
   /* One page container: 16px gutters on phones, 24px on tablets, 80px on desktop */
   .wrap {
-    width: 100%;
-    max-width: 1440px;
+    --gutter: max(16px, env(safe-area-inset-left));
+    width: min(100% - 2 * var(--gutter), 1280px);
     margin-inline: auto;
-    padding-inline: max(16px, env(safe-area-inset-left));
   }
-  @media (min-width: 640px) { .wrap { padding-inline: 24px; } }
-  @media (min-width: 1024px) { .wrap { padding-inline: 80px; } }
+  @media (min-width: 640px) { .wrap { --gutter: 24px; } }
+  @media (min-width: 1024px) { .wrap { --gutter: 80px; } }
+
+  /* Hero ground: plum planet with a coral rim (see components/site/Eclipse.tsx) */
+  .eclipse {
+    --mx: 50%;
+    --rise: 0px;
+    --R: max(85vw, 560px);
+    --horizon: calc(86% + var(--rise));
+    background:
+      radial-gradient(28vw 14vw at var(--mx) var(--horizon), rgba(255, 158, 145, 0.42), transparent 70%),
+      radial-gradient(circle at 50% calc(var(--horizon) + var(--R)),
+        #140A18 calc(var(--R) - 320px), #2E1A36 calc(var(--R) - 4px),
+        #FF6B5B calc(var(--R) - 1.5px), #FF6B5B var(--R),
+        rgba(255, 107, 91, 0.45) calc(var(--R) + 1px), rgba(255, 107, 91, 0.12) calc(var(--R) + 70px),
+        transparent calc(var(--R) + 180px)),
+      radial-gradient(60vw 30vh at 50% var(--horizon), rgba(255, 107, 91, 0.22), transparent 70%),
+      var(--background);
+  }
+  /* Setup ground: a cream band that opens from a centred panel (see SetupSection) */
+  .cream-band {
+    --ix: 0%;
+    --iy: 0%;
+    background: linear-gradient(var(--cream), var(--cream)) center / calc(100% - 2 * var(--ix)) calc(100% - 2 * var(--iy)) no-repeat;
+  }
 
   /* Underline that draws in from the left on hover */
   .link-draw {
