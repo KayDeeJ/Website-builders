@@ -1,20 +1,20 @@
-// Brand palette: coral + midnight plum.
-// Literal hex values (not CSS vars) because several React Bits components
-// resolve colours through a canvas context, which cannot read var(--…).
-// Keep in sync with the tokens in src/index.css.
+// Union Motor Trade palette: coral ("brass" in the site's own CSS) on midnight plum.
+// Literal hex values (not CSS vars) because several React Bits components resolve
+// colours through a canvas context, which cannot read var(--…).
+// Keep in sync with the tokens in src/umt/legacy.css (:root) and src/index.css.
 export const brand = {
   coral: {
-    300: '#FF9E91',
-    500: '#FF6B5B',
-    600: '#E5483A',
-    700: '#C93A2D', // AA-safe coral for text on cream
+    300: '#FF9A8A',
+    500: '#FF5D5D', // --brass
+    600: '#E54848',
+    700: '#C02E2E', // --brass-t, coral for text on light grounds
   },
   plum: {
-    300: '#B49ABD',
-    700: '#432850',
-    800: '#2E1A36',
-    900: '#1F1026',
-    950: '#140A18',
+    300: '#B3A6BD', // --muted (dark)
+    700: '#3A2A47', // --line (dark)
+    800: '#2B1640', // --hero
+    900: '#1E1426', // --ink (light), --on-brass
+    950: '#140A1C', // --bg (dark)
   },
-  cream: '#FFF4EF',
+  cream: '#FBF8FA', // --bg (light)
 } as const

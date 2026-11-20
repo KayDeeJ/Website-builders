@@ -1,10 +1,6 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+import App from './umt/App'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+// No StrictMode: the original engine owns parts of the DOM, and React must render it exactly once.
+createRoot(document.getElementById('root')!).render(<App />)

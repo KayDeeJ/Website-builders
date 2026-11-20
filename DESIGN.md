@@ -1,56 +1,48 @@
 ---
 version: alpha
-name: Website Builders
-description: A midnight-plum night sky with a coral horizon. Warm soft-serif display type (Fraunces) over a clean grotesk (Geist), coral used as light rather than paint, and one cream surface per page for contrast.
+name: Union Motor Trade
+description: A dealer-backed car marketplace in coral on midnight plum. Light by default with a full dark theme; Sora display over Hanken Grotesk body; coral pill buttons with a travelling star; spotlight cards; plain, regulated-business copy.
 
 colors:
-  coral: "#FF6B5B"
-  coral-soft: "#FF9E91"
-  coral-deep: "#C93A2D"   # coral for text on cream (AA)
-  plum: "#2E1A36"
-  plum-900: "#1F1026"     # cards on dark
-  plum-deep: "#140A18"    # page ground
-  plum-muted: "#B49ABD"   # secondary text on dark
-  cream: "#FFF4EF"
+  brass: "#FF5D5D"        # coral: buttons, nav, accents
+  brass-text: "#C02E2E"   # coral for text on light grounds (dark theme: #FF7B70)
+  hero: "#2B1640"         # midnight plum: header, hero (dark), floating bar
+  ink: "#1E1426"
+  muted: "#645870"
+  line: "#D6CEDD"
+  bg: "#FBF8FA"           # dark theme: #140A1C
+  alt: "#F0EAF2"          # dark theme: #1B0F25
+  ok: "#1F6B43"
+  warn: "#A15C00"
 
 typography:
   display:
-    fontFamily: Fraunces Variable (SOFT 100, opsz 144)
-    fontSize: clamp(2.75rem, 7.5vw, 6rem)
-    fontWeight: 500
-    lineHeight: 0.98
-    letterSpacing: -0.03em
+    fontFamily: Sora Variable
+    fontSize: clamp(2.3rem, 6.2vw, 4.4rem)
+    fontWeight: 250
+    letterSpacing: -0.035em
   heading:
-    fontFamily: Fraunces Variable
-    fontSize: clamp(2.25rem, 5vw, 4rem)
-    fontWeight: 500
-    lineHeight: 1.02
-    letterSpacing: -0.03em
+    fontFamily: Sora Variable
+    fontSize: clamp(1.6rem, 3.4vw, 2.3rem)
+    fontWeight: 300
   body:
-    fontFamily: Geist Variable
-    fontSize: 18px
-    lineHeight: 1.6
-  code:
-    fontFamily: ui-monospace
-    fontSize: 13px
+    fontFamily: Hanken Grotesk Variable
+    fontSize: 17px
+    lineHeight: 1.65
 
 rounded:
-  control: 14px
-  card: 16px
-  panel: 24px
+  control: 999px
+  card: 14px
 ---
 
 ## Principles
-- **Coral is light, not paint.** It shows up as a rim, a glow, a spotlight, a travelling star or one italic word per heading. Large coral fills are kept to the primary utility control.
-- **One accent word per heading,** set in Fraunces italic coral (`coral-deep` on cream).
-- **Dark by default,** with one cream panel per page as the contrast beat.
-- **Numbers are true.** Counts are measured from the code at build time, never invented.
+- **Trust first.** One clear total price, optional extras never pre-ticked, placeholders marked `[to be confirmed]` until legal sign-off.
+- **Coral is action.** Coral pills are the actions; coral text marks highlights and links.
+- **Same layout as the original.** Upgrades add motion and light, never move content.
 
 ## Motion
-- Lenis smooth scroll drives GSAP's ticker; both are off under `prefers-reduced-motion`.
-- The hero enters once on load (SplitText headline, BlurText subtitle, the eclipse rising).
-- One scroll moment per page: the setup panel opens from an inset window (clip-path, scrubbed).
-- Hover: cards lift 2px, links draw an underline, StarBorder laps on hover.
-
-## Components
-React Bits in `src/components/` (palette in `src/lib/brand.ts`), page parts in `src/components/site/`.
+- Headings rise in word by word when a screen is shown (SplitText); the home subtitle focuses in (BlurText).
+- Selling rules count up (CountUp). Lists and steps rise in once (AnimatedContent).
+- Primary buttons carry a star of light round their edge (StarBorder); cards follow the pointer with a coral spotlight (SpotlightCard).
+- The floating Sell / Buy / Hot deals bar slides in when the header leaves the screen.
+- Lenis smooth scrolling. Everything rests under `prefers-reduced-motion`.

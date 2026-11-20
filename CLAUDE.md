@@ -1,5 +1,7 @@
 # Website Builders
 
+This repo holds the **Union Motor Trade** website (the dealer-backed marketplace for private car sellers and buyers).
+
 ## Design skills (project-level, in `.claude/skills/`)
 - `design-taste-frontend` — Leonxlnx/taste-skill
 - `web-design-guidelines` — vercel-labs/agent-skills
@@ -27,15 +29,32 @@ These are copy-in/CLI registries: add individual components as needed (e.g. via 
 Playwright MCP is configured at project scope in `.mcp.json` for browser checks and screenshots.
 
 ## Stack
-Vite + React 19 + TypeScript, Tailwind CSS v4 (`@tailwindcss/vite`), shadcn (`components.json`, alias `@/` → `src/`).
+Vite + React 19 + TypeScript, Tailwind CSS v4 (theme + utilities only, no preflight), alias `@/` → `src/`.
 `npm run dev` / `npm run build`.
 
+## How the site is built (staged rebuild)
+- `src/umt/App.tsx` renders every screen once. The original site logic, `src/umt/engine/engine.js`, loads as a
+  classic script after that first render, routes on the URL hash (`#sell`, `#buy`, `#car-3`) by toggling each
+  `.view`'s `hidden` attribute, and fills the engine-built screens.
+- **Never re-render engine-owned DOM.** App and the screen components hold no state. Keep every id and class in the
+  markup: they are the engine's hooks.
+- `src/umt/views/`: public screens upgraded with React Bits (home, sell, buy, hot deals, packages, how it works,
+  fees, protection, legal, "no longer available").
+- `src/umt/markup/`: shell and engine-built screens, generated from the original markup (car page, profile,
+  part-exchange, revenue, pay, ID, finance, delivery, settings, help, refer). Port these one by one: move a screen's
+  rendering out of the engine into a React component, then delete that code from the engine.
+- `src/umt/ui.tsx`: Headline (SplitText), CoralButton (StarBorder), Spot (SpotlightCard in site colours), Reveal
+  (AnimatedContent). Animated parts remount when their screen is shown (`useShownKey`), since screens start hidden.
+- `src/umt/legacy.css`: the original stylesheet. `src/index.css`: fonts and the upgrade layer.
+- Tailwind only scans `src/components` and the new React files: engine class names (e.g. `.fixed`) must never become
+  utilities.
+
 ## Brand colours: coral + midnight plum
-- CSS tokens live in `src/index.css`. The shadcn tokens are set to the brand palette (`.dark` = plum ground; `<html class="dark">` by default), and there are utilities `text-coral`, `bg-plum`, `bg-cream` etc.
-- The same values are in `src/lib/brand.ts` for components that paint colours through canvas (CSS vars don't work there). Keep the two in sync.
-- React Bits components live in `src/components/`. Their default palettes (ShinyText, SpotlightCard, StarBorder) are already restyled; the rest inherit text colour.
+- The site's tokens are in `src/umt/legacy.css` (`--brass` coral, `--hero` plum, light and dark themes; the engine's
+  toggle sets `data-theme` on `<html>`).
+- The same values are in `src/lib/brand.ts` for components that paint through canvas. Keep the two in sync.
 
 ## Design system
-See `DESIGN.md` (written in the awesome-design-md format). Display: Fraunces; body: Geist. One coral italic accent word per heading.
-Motion: `src/hooks/useSmoothScroll.ts` (Lenis + GSAP ScrollTrigger); everything rests under reduced motion.
+See `DESIGN.md`. Display: Sora; body: Hanken Grotesk (self-hosted).
+Motion: `src/umt/hooks.ts` (Lenis + GSAP ScrollTrigger); everything rests under reduced motion.
 Taste-skill scripts need `CHROME_PATH` pointing at a wrapper that runs `/opt/pw-browsers/chromium-*/chrome-linux64/chrome --no-sandbox` in cloud sessions.

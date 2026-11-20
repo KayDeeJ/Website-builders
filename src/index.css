@@ -1,242 +1,77 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/fraunces/full.css";
-@import "@fontsource-variable/fraunces/full-italic.css";
+/*
+ * Union Motor Trade styles.
+ * 1. Tailwind theme + utilities only (no preflight reset), for the React Bits components.
+ * 2. The site's original stylesheet, unchanged apart from its photo moving to a file.
+ * 3. Upgrades: self-hosted fonts, React Bits integration, motion polish.
+ */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@import "@fontsource-variable/sora";
+@import "@fontsource-variable/hanken-grotesk";
+@import "./umt/legacy.css";
 
-@custom-variant dark (&:is(.dark *));
+/* Only the React components generate utilities. The engine and the original markup use their own
+   class names (e.g. "fixed" for a fixed-price note), which must not become Tailwind utilities. */
+@source "./components";
+@source "./umt/ui.tsx";
+@source "./umt/QuickBar.tsx";
+/* "fixed" appears as a variable name in CountUp; the engine uses .fixed for its fixed-price note. */
+@source not inline("fixed");
 
-@theme inline {
-    --font-heading: 'Fraunces Variable', Georgia, serif;
-    --font-sans: 'Geist Variable', sans-serif;
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --color-coral: var(--coral);
-    --color-coral-soft: var(--coral-soft);
-    --color-coral-deep: var(--coral-deep);
-    --color-plum: var(--plum);
-    --color-plum-deep: var(--plum-deep);
-    --color-cream: var(--cream);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
-}
-
+/* Self-hosted variable fonts first, the original Google Fonts names as fallbacks. */
 :root {
-    /* Light: cream ground, midnight plum ink, coral accent */
-    --coral: #FF6B5B;
-    --coral-soft: #FF9E91;
-    --coral-deep: #C93A2D;
-    --plum: #2E1A36;
-    --plum-deep: #140A18;
-    --cream: #FFF4EF;
-
-    --background: #FFF4EF;
-    --foreground: #1F1026;
-    --card: #FFFFFF;
-    --card-foreground: #1F1026;
-    --popover: #FFFFFF;
-    --popover-foreground: #1F1026;
-    --primary: #2E1A36;
-    --primary-foreground: #FFF4EF;
-    --secondary: #F6E4DE;
-    --secondary-foreground: #2E1A36;
-    --muted: #F6E4DE;
-    --muted-foreground: #6B5470;
-    --accent: #FFD9D2;
-    --accent-foreground: #2E1A36;
-    --destructive: #B4232A;
-    --border: rgba(46, 26, 54, 0.14);
-    --input: rgba(46, 26, 54, 0.18);
-    --ring: #E5483A;
-    --chart-1: #FF6B5B;
-    --chart-2: #2E1A36;
-    --chart-3: #FF9E91;
-    --chart-4: #6B5470;
-    --chart-5: #C93A2D;
-    --radius: 0.625rem;
-    --sidebar: #FBEAE4;
-    --sidebar-foreground: #1F1026;
-    --sidebar-primary: #2E1A36;
-    --sidebar-primary-foreground: #FFF4EF;
-    --sidebar-accent: #F6E4DE;
-    --sidebar-accent-foreground: #2E1A36;
-    --sidebar-border: rgba(46, 26, 54, 0.14);
-    --sidebar-ring: #E5483A;
+  --display: "Sora Variable", "Sora", "Helvetica Neue", Arial, sans-serif;
+  --body: "Hanken Grotesk Variable", "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 }
 
-.dark {
-    /* Dark: midnight plum ground, cream ink, coral primary */
-    --background: #140A18;
-    --foreground: #FFF4EF;
-    --card: #1F1026;
-    --card-foreground: #FFF4EF;
-    --popover: #1F1026;
-    --popover-foreground: #FFF4EF;
-    --primary: #FF6B5B;
-    --primary-foreground: #140A18;
-    --secondary: #2E1A36;
-    --secondary-foreground: #FFF4EF;
-    --muted: #2E1A36;
-    --muted-foreground: #B49ABD;
-    --accent: #432850;
-    --accent-foreground: #FFF4EF;
-    --destructive: #FF6470;
-    --border: rgba(255, 158, 145, 0.14);
-    --input: rgba(255, 158, 145, 0.2);
-    --ring: #FF6B5B;
-    --chart-1: #FF6B5B;
-    --chart-2: #FF9E91;
-    --chart-3: #B49ABD;
-    --chart-4: #E5483A;
-    --chart-5: #432850;
-    --sidebar: #1F1026;
-    --sidebar-foreground: #FFF4EF;
-    --sidebar-primary: #FF6B5B;
-    --sidebar-primary-foreground: #140A18;
-    --sidebar-accent: #2E1A36;
-    --sidebar-accent-foreground: #FFF4EF;
-    --sidebar-border: rgba(255, 158, 145, 0.14);
-    --sidebar-ring: #FF6B5B;
-}
+/* Browser surfaces in the palette */
+::selection { background: var(--brass); color: var(--on-brass); }
+html { scrollbar-color: color-mix(in oklab, var(--brass) 60%, transparent) var(--bg); }
+input, textarea { caret-color: var(--brass-t); }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-    }
-  body {
-    @apply bg-background text-foreground;
-    }
-  html {
-    @apply font-sans;
-    }
-}
-/* Browser surfaces, themed from the palette */
-@layer base {
-  html {
-    color-scheme: dark;
-    scrollbar-color: color-mix(in oklab, var(--coral) 55%, transparent) var(--background);
-    -webkit-font-smoothing: antialiased;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-  @media (pointer: fine) {
-    html { overscroll-behavior: none; }
-  }
-  ::selection {
-    background: var(--coral);
-    color: var(--plum-deep);
-  }
-  input, textarea {
-    caret-color: var(--coral);
-  }
-  :focus-visible {
-    outline: 2px solid var(--coral);
-    outline-offset: 3px;
-    border-radius: 6px;
-  }
-  .font-heading {
-    font-variation-settings: "SOFT" 100, "WONK" 0, "opsz" 144;
-  }
-  section[id] {
-    scroll-margin-top: 4rem;
-  }
-}
+/* ---------- React Bits integration ---------- */
 
-@layer components {
-  /* One page container: 16px gutters on phones, 24px on tablets, 80px on desktop */
-  .wrap {
-    --gutter: max(16px, env(safe-area-inset-left));
-    width: min(100% - 2 * var(--gutter), 1280px);
-    margin-inline: auto;
-  }
-  @media (min-width: 640px) { .wrap { --gutter: 24px; } }
-  @media (min-width: 1024px) { .wrap { --gutter: 80px; } }
+/* Headings split into words keep the site's type; the highlight keeps its colour. */
+/* Inline-block word wrappers must not add baseline space: headings keep their original height. */
+h1 .split-parent, h2 .split-parent { line-height: inherit; vertical-align: top; }
+h1 .split-parent > *, h2 .split-parent > * { vertical-align: top; }
+.hero h1 .hl, h2 .hl { color: var(--brass-t); }
+.hero h1 .hl { color: var(--brass); }
+.hero .sub.blur-text { flex-wrap: wrap; }
 
-  /* Hero ground: plum planet with a coral rim (see components/site/Eclipse.tsx) */
-  .eclipse {
-    --mx: 50%;
-    --rise: 0px;
-    --R: max(85vw, 560px);
-    --horizon: calc(86% + var(--rise));
-    background:
-      radial-gradient(28vw 14vw at var(--mx) var(--horizon), rgba(255, 158, 145, 0.42), transparent 70%),
-      radial-gradient(circle at 50% calc(var(--horizon) + var(--R)),
-        #140A18 calc(var(--R) - 320px), #2E1A36 calc(var(--R) - 4px),
-        #FF6B5B calc(var(--R) - 1.5px), #FF6B5B var(--R),
-        rgba(255, 107, 91, 0.45) calc(var(--R) + 1px), rgba(255, 107, 91, 0.12) calc(var(--R) + 70px),
-        transparent calc(var(--R) + 180px)),
-      radial-gradient(60vw 30vh at 50% var(--horizon), rgba(255, 107, 91, 0.22), transparent 70%),
-      var(--background);
-  }
-  /* Setup ground: a cream band that opens from a centred panel (see SetupSection) */
-  .cream-band {
-    --ix: 0%;
-    --iy: 0%;
-    background: linear-gradient(var(--cream), var(--cream)) center / calc(100% - 2 * var(--ix)) calc(100% - 2 * var(--iy)) no-repeat;
-  }
+/* Coral StarBorder buttons take the place of .btn */
+.umt-btn { font: 500 1rem var(--body); padding: 14px 28px; min-height: 48px; cursor: pointer; text-decoration: none; transition: translate .25s cubic-bezier(.2,.8,.2,1), filter .2s; }
+.umt-btn:hover { filter: brightness(1.06); translate: 0 -1px; }
+.umt-btn:active { translate: 0 1px; }
+.umt-btn-ghost:hover { filter: none; }
+.umt-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.check .umt-btn { margin-top: 4px; }
+.pcform .umt-btn { padding: 12px 24px; }
 
-  /* Underline that draws in from the left on hover */
-  .link-draw {
-    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 0.6em) / 0 1px no-repeat;
-    transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s;
-  }
-  .link-draw:hover {
-    background-size: calc(100% - 1.5rem) 1px;
-    background-position-x: 0.75rem;
-  }
-  footer .link-draw {
-    background-position-y: 100%;
-  }
-  footer .link-draw:hover {
-    background-size: 100% 1px;
-    background-position-x: 0;
-  }
-  /* Cards lift 2px under the pointer */
-  .lift {
-    transition: translate 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .lift:hover {
-    translate: 0 -2px;
-  }
-}
+/* Home fork: the link is the hit area, the spotlight card draws the surface */
+.fork a.fork-link { padding: 0; border: 0; background: none; min-height: 0; border-radius: 16px; overflow: visible; }
+.fork a.fork-link:hover, .fork a.fork-link:focus-visible { background: none; }
+.fork .fork-card { min-height: 176px; padding: 28px; border-radius: 16px; transition: translate .3s cubic-bezier(.2,.8,.2,1); }
+.fork a.fork-link:hover .fork-card { translate: 0 -2px; }
+.fork a.fork-link:hover .bg, .fork a.fork-link:focus-visible .bg { opacity: .3; }
+
+/* Packages: spotlight cards keep the coral top rule of the original */
+.pkgs .pkg.umt-spot { padding: 22px 24px 18px; border-radius: 14px; border-top: 0; }
+.pkgs .pkg.umt-spot::before { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--brass); z-index: 2; }
+
+/* Engine-built car cards: a quiet lift and photo zoom on hover */
+.car { transition: translate .3s cubic-bezier(.2,.8,.2,1); }
+.car:hover { translate: 0 -2px; }
+.car .ph { transition: box-shadow .3s; }
+.car:hover .ph { box-shadow: 0 14px 30px -18px rgba(43, 22, 64, .55); }
+
+/* Count-up numbers in the selling rules */
+.rules li { font-variant-numeric: tabular-nums; }
+
+/* Floating quick bar: ShinyText inherits the link layout */
+.qbar .hotnav { display: inline-flex; align-items: center; gap: 8px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .lift, .link-draw {
-    transition: none;
-  }
+  .umt-btn, .car, .fork .fork-card { transition: none; }
+  .umt-btn:hover, .car:hover, .fork a.fork-link:hover .fork-card { translate: none; }
 }
