@@ -34,3 +34,8 @@ Vite + React 19 + TypeScript, Tailwind CSS v4 (`@tailwindcss/vite`), shadcn (`co
 - CSS tokens live in `src/index.css`. The shadcn tokens are set to the brand palette (`.dark` = plum ground; `<html class="dark">` by default), and there are utilities `text-coral`, `bg-plum`, `bg-cream` etc.
 - The same values are in `src/lib/brand.ts` for components that paint colours through canvas (CSS vars don't work there). Keep the two in sync.
 - React Bits components live in `src/components/`. Their default palettes (ShinyText, SpotlightCard, StarBorder) are already restyled; the rest inherit text colour.
+
+## Design system
+See `DESIGN.md` (written in the awesome-design-md format). Display: Fraunces; body: Geist. One coral italic accent word per heading.
+Motion: `src/hooks/useSmoothScroll.ts` (Lenis + GSAP ScrollTrigger); everything rests under reduced motion.
+Taste-skill scripts need `CHROME_PATH` pointing at a wrapper that runs `/opt/pw-browsers/chromium-*/chrome-linux64/chrome --no-sandbox` in cloud sessions.
