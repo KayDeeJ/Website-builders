@@ -178,6 +178,16 @@
 }
 
 @layer components {
+  /* One page container: 16px gutters on phones, 24px on tablets, 80px on desktop */
+  .wrap {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: max(16px, env(safe-area-inset-left));
+  }
+  @media (min-width: 640px) { .wrap { padding-inline: 24px; } }
+  @media (min-width: 1024px) { .wrap { padding-inline: 80px; } }
+
   /* Underline that draws in from the left on hover */
   .link-draw {
     background: linear-gradient(currentColor, currentColor) 0 calc(100% - 0.6em) / 0 1px no-repeat;

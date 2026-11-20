@@ -32,7 +32,7 @@ function Mark() {
 function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-[max(1rem,env(safe-area-inset-left))] sm:px-8">
+      <div className="wrap flex h-16 items-center justify-between">
         <a href="#top" className="flex min-h-11 items-center gap-2.5 text-foreground" aria-label="Website Builders, back to top">
           <Mark />
           <ShinyText text="Website Builders" speed={3} delay={2} className="font-heading text-lg tracking-tight" />
@@ -60,7 +60,7 @@ function Hero() {
   return (
     <section id="top" data-enter className="relative isolate flex min-h-svh flex-col justify-center overflow-hidden pt-16">
       <Eclipse />
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-[18vh] sm:px-8">
+      <div className="wrap relative pb-[18vh]">
         <h1 className="font-heading max-w-[15ch] text-[clamp(2.75rem,7.5vw,6rem)] leading-[0.98] font-medium tracking-[-0.03em] text-balance">
           <SplitText
             tag="span"
@@ -108,7 +108,7 @@ function KitSection() {
 
   return (
     <section id="kit" aria-labelledby="kit-title" className="flex min-h-svh flex-col justify-center py-28">
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-8">
+      <div className="wrap">
         <h2 id="kit-title" className="font-heading max-w-[18ch] text-[clamp(2.25rem,5vw,4rem)] leading-[1.02] font-medium tracking-[-0.03em] text-balance">
           The component kit, <span className="text-coral italic">by the numbers.</span>
         </h2>
@@ -193,10 +193,10 @@ function SetupSection() {
 
   return (
     <section id="setup" aria-labelledby="setup-title" className="flex min-h-svh flex-col justify-center py-28">
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-8">
+      <div className="wrap">
         <div ref={frame}>
           <SpotlightCard theme="light" className="p-7 sm:p-12 lg:p-14">
-            <AnimatedContent distance={40} duration={1} ease="expo.out" stagger={0.08} wipe="up" className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center">
+            <AnimatedContent distance={40} duration={1} ease="expo.out" stagger={0.08} wipe="up" className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
               <div>
                 <h2 id="setup-title" className="font-heading text-[clamp(2.25rem,4.5vw,3.75rem)] leading-[1.02] font-medium tracking-[-0.03em] text-plum text-balance">
                   Install any component in <span className="text-coral-deep italic">one line.</span>
@@ -248,7 +248,7 @@ function SetupSection() {
 function Footer() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
+      <div className="wrap flex flex-col gap-3 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <span className="flex items-center gap-2 text-foreground">
           <Mark /> Website Builders
         </span>

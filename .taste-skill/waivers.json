@@ -1,0 +1,7 @@
+[
+  {"check": "container-edges", "target": "div#root \"Skip to content", "reason": "React mounts the whole app inside div#root; the page itself is header, main of sections and footer inside it."},
+  {"check": "container-edges", "target": "div.eclipse-glow", "reason": "Decorative aria-hidden background layer of the hero (the eclipse ground), not content."},
+  {"check": "container-edges", "target": "div.eclipse-body", "reason": "Decorative aria-hidden background layer of the hero (the eclipse planet), not content."},
+  {"check": "section-height", "target": "footer.border-t.border-border", "reason": "The footer is a one-line credit, not a section; the user asked to keep the page's structure."},
+  {"check": "one-section", "target": "footer.border-t.border-border", "reason": "Only the one-line credit footer peeks under the last section; the user asked to keep the page's structure."}
+]

@@ -26,5 +26,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.taste-skill/
+.taste-skill/*
+!.taste-skill/waivers.json
 dist/
