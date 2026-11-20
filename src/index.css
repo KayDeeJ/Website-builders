@@ -75,3 +75,56 @@ h1 .split-parent > *, h2 .split-parent > * { vertical-align: top; }
   .umt-btn, .car, .fork .fork-card { transition: none; }
   .umt-btn:hover, .car:hover, .fork a.fork-link:hover .fork-card { translate: none; }
 }
+
+/* ---------- Preview: motion and polish ---------- */
+
+/* Hero photo: settles in with a slow zoom, then one headlight glint sweeps across it. */
+.hero .scene { overflow: hidden; }
+.hero .scene[data-play] img { animation: scene-settle 2.6s cubic-bezier(.16, 1, .3, 1) both; }
+.hero .scene .glint {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 214, 196, .55) 48%, rgba(255, 255, 255, .85) 50%, rgba(255, 214, 196, .55) 52%, transparent 62%);
+  background-size: 260% 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 30%, #000 70%);
+  mask-image: linear-gradient(180deg, transparent 30%, #000 70%);
+}
+.hero .scene[data-play] .glint { animation: scene-glint 2.2s cubic-bezier(.45, 0, .2, 1) 1.1s both; }
+@keyframes scene-settle { from { transform: scale(1.07); filter: brightness(.6) saturate(.7); } to { transform: none; } }
+@keyframes scene-glint { 0% { opacity: 0; background-position: 120% 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; background-position: -60% 0; } }
+
+/* Hot-deal card: a light travels round its border. */
+@property --promo-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.promo:not(:empty) { isolation: isolate; }
+.promo:not(:empty)::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 3;
+  background: conic-gradient(from var(--promo-angle), transparent 0 70%, rgba(255, 154, 138, .9) 82%, #FFFFFF 86%, rgba(255, 154, 138, .9) 90%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: promo-orbit 5s linear infinite;
+}
+.promo:hover::after, .promo:focus-within::after { animation-play-state: paused; }
+@keyframes promo-orbit { to { --promo-angle: 360deg; } }
+
+/* Hot-deal countdown: the real timer stays for screen readers; its copy rolls each digit. */
+.promo .ptm-src { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.promo .ptm-roll { display: inline-flex; overflow: hidden; }
+.promo .ptm-roll .pd { display: inline-block; white-space: pre; }
+
+/* Deal tracker: the line fills in coral as the section scrolls by. */
+.tracker-fill .tracker { position: relative; border-top-color: var(--line); --fill: 1; }
+.tracker-fill .tracker::before {
+  content: ""; position: absolute; left: 0; top: -1px; height: 2px; width: calc(var(--fill) * 100%);
+  background: linear-gradient(90deg, var(--brass), #FF9A8A); border-radius: 2px;
+}
+.tracker-fill .tracker li { transition: color .35s, opacity .35s; opacity: .55; }
+.tracker-fill .tracker li.lit { opacity: 1; }
+.tracker-fill .tracker li.lit::first-line { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .scene img, .hero .scene .glint { animation: none !important; }
+  .promo:not(:empty)::after { animation: none; }
+  .tracker-fill .tracker li { opacity: 1; }
+}
+
+/* Money figures use fixed-width digits, so totals line up and counting figures never change width. */
+#pm, .sum .row span:last-child, .price, .pan .xl { font-variant-numeric: tabular-nums; }

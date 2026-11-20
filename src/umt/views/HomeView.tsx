@@ -1,14 +1,14 @@
 import heroScene from '../assets/hero-scene.jpg'
 
 import BlurText from '@/components/BlurText'
-import { CoralButton, Headline, Reveal, Spot } from '../ui'
+import { CoralButton, Headline, HeroScene, Reveal, Spot } from '../ui'
 
 /* From the original Union Motor Trade markup, upgraded with React Bits. Ids and classes are hooks for the engine. */
 export default function HomeView() {
   return (
     <>
 <div id="view-home" className="view">
-  <div className="hero"><div className="scene" aria-hidden="true"><img alt="" src={heroScene} /></div><div className="wrap herogrid"><div className="heromain">
+  <div className="hero"><HeroScene src={heroScene} /><div className="wrap herogrid"><div className="heromain">
     <Headline as="h1" parts={["What brings you to", { hl: "Union Motor Trade?" }]} />
     <BlurText trigger="load" animateBy="words" delay={30} className="sub" text="The dealer-backed marketplace connecting private car sellers with cash and finance buyers. Open to everyday drivers, not just the trade." />
     <form className="pcform" id="pc-home" noValidate><label>Your postcode<input id="pc-home-in" autoComplete="postal-code" placeholder="e.g. LS1 4AB" aria-describedby="pc-home-msg" /></label><CoralButton type="submit">See cars near me</CoralButton><p className="pcmsg" id="pc-home-msg" aria-live="polite"></p></form>

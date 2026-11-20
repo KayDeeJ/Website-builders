@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import engineUrl from './engine/engine.js?url'
+import { useEngineFx } from './fx'
 import { useSiteMotion } from './hooks'
 import QuickBar from './QuickBar'
 import Footer from './markup/Footer'
@@ -41,6 +42,7 @@ declare global {
  */
 export default function App() {
   useSiteMotion()
+  useEngineFx()
 
   useEffect(() => {
     if (window.__umtEngine) return

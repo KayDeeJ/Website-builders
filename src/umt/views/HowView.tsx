@@ -1,4 +1,4 @@
-import { Headline, Reveal } from '../ui'
+import { Headline, TrackerFill } from '../ui'
 
 /* From the original Union Motor Trade markup, upgraded with React Bits. Ids and classes are hooks for the engine. */
 export default function HowView() {
@@ -17,9 +17,9 @@ export default function HowView() {
   <section className="alt"><div className="wrap">
     <Headline parts={["Track every deal"]} />
     <p className="lede">Buyers and sellers see the same progress, in their <a className="lnk" href="#profile">profile</a>.</p>
-    <Reveal><ol className="tracker">
+    <TrackerFill><ol className="tracker">
       <li>Reserved</li><li>Finance approved<small>finance purchases</small></li><li>Inspection</li><li>Preparation<small>if ordered</small></li><li>Ready for delivery</li><li>Completed</li>
-    </ol></Reveal>
+    </ol></TrackerFill>
   </div></section>
   <section><div className="wrap cols">
     <div><h3>Vehicles we accept</h3><ul className="pts"><li>10 years old or under, under 120,000 miles</li><li>No write-offs or salvage history</li><li>Roadworthy, with V5C and clear ownership</li><li>Finance is fine, with a settlement statement</li><li>Cars we wouldn’t retail ourselves are declined</li></ul></div>

@@ -1,10 +1,11 @@
-import { useRef, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import AnimatedContent from '@/components/AnimatedContent'
 import SplitText from '@/components/SplitText'
 import SpotlightCard from '@/components/SpotlightCard'
 import StarBorder from '@/components/StarBorder'
 import { brand } from '@/lib/brand'
-import { useShownKey, useSiteTheme } from './hooks'
+import { reducedMotion, useShownKey, useSiteTheme } from './hooks'
 
 type Part = string | { hl: string }
 
@@ -124,5 +125,55 @@ export function Reveal({ children, className, stagger = 0.08 }: { children: Reac
         {children}
       </AnimatedContent>
     </>
+  )
+}
+
+/**
+ * "Track every deal": a coral line fills the tracker as it scrolls through the screen,
+ * lighting each stage it passes. Rests fully lit under reduced motion.
+ */
+export function TrackerFill({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const shown = useShownKey(ref)
+  useEffect(() => {
+    const box = ref.current
+    const ol = box?.querySelector<HTMLElement>('ol.tracker')
+    if (!box || !ol) return
+    const steps = Array.from(ol.children) as HTMLElement[]
+    const paint = (p: number) => {
+      ol.style.setProperty('--fill', String(p))
+      steps.forEach((li, i) => li.classList.toggle('lit', p >= (i + 0.5) / steps.length))
+    }
+    if (box.closest('.view')?.hasAttribute('hidden')) return
+    if (reducedMotion()) {
+      paint(1)
+      return
+    }
+    paint(0)
+    const st = ScrollTrigger.create({
+      trigger: ol,
+      start: 'top 85%',
+      end: 'top 35%',
+      scrub: 0.4,
+      onUpdate: (self) => paint(self.progress),
+    })
+    return () => st.kill()
+  }, [shown])
+  return (
+    <div ref={ref} className="tracker-fill">
+      {children}
+    </div>
+  )
+}
+
+/** Home hero photo: a slow settle-in zoom and one headlight glint each time home is shown. */
+export function HeroScene({ src }: { src: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const shown = useShownKey(ref)
+  return (
+    <div ref={ref} className="scene" aria-hidden="true" key={shown} data-play={reducedMotion() ? undefined : ''}>
+      <img alt="" src={src} />
+      <span className="glint" />
+    </div>
   )
 }
