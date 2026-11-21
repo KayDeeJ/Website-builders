@@ -67,3 +67,7 @@
 .tup-hint{border-radius:12px;padding:10px 14px;background:linear-gradient(90deg,rgba(201,242,255,.14),rgba(232,200,255,.18),rgba(255,227,176,.14));border:1px solid rgba(200,180,255,.45)}
 @media (max-width:560px){.tup-cw{width:180px;height:228px}.tup-tn{font-size:1.9rem}.tup-medal{width:62px;height:62px;font-size:1.6rem}.tup-h{font-size:1.7rem;margin-top:20px}}
 @media (prefers-reduced-motion:reduce){.tupv *,.tupv{animation:none!important;transition:none!important}}
+
+/* Rewards that don't apply to the current car (from the live site's reward-threshold update) */
+.rwbtn.rw-no{opacity:.55;cursor:not-allowed;filter:grayscale(.5)}
+.rwbtn.rw-no span{white-space:normal}

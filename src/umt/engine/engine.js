@@ -2037,10 +2037,19 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
         });
       var R = rewardsFor(),
         rw = null;
+      var _px = st.px || 0,
+        _pxo = (st.px && pxList[st.pxId]) || null,
+        _pxs = _pxo && _pxo.fn === "Yes" ? parseFloat(_pxo.settle) || 0 : 0,
+        _rp = resvByMe(i) && !reserved[i].sold ? RES_DEP : 0,
+        _dep = fin ? Math.max(0, Math.min(dmax, +$("dep").value || 0)) : 0,
+        borrowPre = fin ? Math.max(0, c.p + FEE + ex - contrib - _px + _pxs - _dep - _rp) : 0,
+        rwElig = function (m) {
+          return rwOk(m, c.p, fin, borrowPre);
+        };
       if (st.rw)
         rw =
           R.filter(function (m) {
-            return m.id === st.rw;
+            return m.id === st.rw && rwElig(m);
           })[0] || null;
       if (!rw) st.rw = null;
       var rb = $("rwbox");
@@ -2060,27 +2069,31 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
           String(R[0].tier || "gold").toLowerCase() +
           '"><p class="rw-t"><span class="tk-star" aria-hidden="true">★</span>Your rewards</p>' +
           R.map(function (m) {
-            var on = st.rw === m.id;
+            var on = st.rw === m.id,
+              ok = rwElig(m);
             return (
               '<button type="button" class="rwbtn rwt-' +
               String(m.tier || "gold").toLowerCase() +
               (on ? " on" : "") +
-              '" data-rw="' +
-              m.id +
-              '" aria-pressed="' +
+              (ok ? "" : " rw-no") +
+              '"' +
+              (ok ? ' data-rw="' + m.id + '"' : " disabled") +
+              ' aria-pressed="' +
               on +
               '"><b>' +
               m.tier +
               " reward: £" +
               fmt(m.amt) +
               " off</b><span>" +
-              (on
-                ? "Applied. Select to remove"
-                : "Select to apply to this car") +
+              (!ok
+                ? "Not available on this car. " + rwWhy(m)
+                : on
+                  ? "Applied. Select to remove"
+                  : "Select to apply to this car") +
               "</span></button>"
             );
           }).join("") +
-          '<p class="note small" style="margin:10px 0 0">Linked to your account, so only you can use it. One reward per car.</p></div>';
+          '<p class="note small" style="margin:10px 0 0">Linked to your account, so only you can use it. Each reward can be used once, on one car. Rewards apply to cars from £12,000 (£15,000 for £500 off, £18,000 for £750 off). On finance, borrowing £10,000 or more lowers this by £3,000.</p></div>';
       rb.querySelectorAll("[data-rw]").forEach(function (b) {
         b.onclick = function () {
           var tt = sumEl.querySelector(".row.big2 span:last-child"),
@@ -2940,6 +2953,9 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
   }
   function endRes(k, why) {
     var nm = carNm(k);
+    MAIL.seller.forEach(function (m) {
+      if (m.perk && m.used === nm) m.used = null;
+    });
     delete reserved[k];
     resv = resv.filter(function (r) {
       return !(r.i === +k && r.v === "dep");
@@ -4470,6 +4486,7 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
       { id: id + "k1", perk: true, tk: "platinum", amt: 750, tier: "Platinum", s: "Platinum ticket: £750 off your next car", t: "£750 off", tl: "your next car with " + SITE.name, code: "PLAT-750", b: "As a Platinum seller, we’ll take £750 off the next car you buy from us. This replaces your Gold £500 ticket.", u: true, go: "buy" },
       { id: id + "k2", perk: true, tk: "platinum", s: "Platinum ticket: free Retail Ready on every car", t: "Free", tl: "Retail Ready pack on every car you list", code: "RR-FREE", b: "No pack fee for you, ever. It’s applied automatically on your offer letters.", u: true, go: "po" },
       { id: id + "am", s: "Meet your account manager, Sophie", b: "Hi, I’m Sophie Reid, your account manager. Call or message me directly about any car you’re selling: 0113 496 0123 (sample). I’ll also check in before each listing goes live.", u: true, go: "ov" }];
+    MAIL.seller.forEach(function (m) { if (m.perk && m.amt && !m.used && !m.repl) m.repl = L; });
     M.reverse().forEach(function (m) { addMail("seller", m); });
   }
   function tierUp(t0, t1) {
@@ -4974,9 +4991,23 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
   function rewardsFor() {
     return user && user.roles && user.roles.seller
       ? MAIL.seller.filter(function (m) {
-          return m.perk && m.amt && !m.used;
+          return m.perk && m.amt && !m.used && !m.repl;
         })
       : [];
+  }
+  // Reward thresholds: rewards only apply where the car's margin can carry them.
+  var RW_FIN_LEND = 10000, RW_FIN_CUT = 3000, RW_FLOOR = 12000;
+  function rwMin(amt) {
+    return amt <= 250 ? RW_FLOOR : amt <= 500 ? 15000 : 18000;
+  }
+  function rwOk(m, price, fin, borrow) {
+    var need = rwMin(m.amt);
+    if (fin && borrow >= RW_FIN_LEND) need = Math.max(RW_FLOOR, need - RW_FIN_CUT);
+    return price >= need;
+  }
+  function rwWhy(m) {
+    var n = rwMin(m.amt);
+    return "£" + fmt(m.amt) + " rewards apply to cars from £" + fmt(n) + (n > RW_FLOOR ? ", or from £" + fmt(Math.max(RW_FLOOR, n - RW_FIN_CUT)) + " on finance when you borrow £" + fmt(RW_FIN_LEND) + " or more" : "") + ".";
   }
 
   var ICW =
@@ -8173,7 +8204,11 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
             '</p><p class="tk-code">' +
             (m.used
               ? "Used on your " + m.used
-              : "Linked to your account · no code needed") +
+              : m.repl
+                ? "Replaced by your " + m.repl + " ticket"
+                : m.amt
+                  ? "One use · cars from £" + fmt(rwMin(m.amt))
+                  : "Linked to your account · no code needed") +
             '</p></div><p style="margin:16px 0 14px">' +
             m.b +
             '</p><a class="btn" href="#' +
