@@ -1,0 +1,148 @@
+/*
+ * Rich finish: depth, light and texture across every screen, including the engine-built
+ * account screens (they share the same class names). Colour and size only; it changes no
+ * content or behaviour. Tokens adapt to the light and dark themes.
+ */
+
+:root {
+  --rich-card: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(255, 249, 251, .78));
+  --rich-edge: rgba(43, 22, 64, .1);
+  --rich-hi: inset 0 1px 0 rgba(255, 255, 255, .95);
+  --rich-shadow: 0 1px 2px rgba(43, 22, 64, .06), 0 14px 34px -16px rgba(43, 22, 64, .24);
+  --rich-shadow-up: 0 2px 4px rgba(43, 22, 64, .07), 0 22px 44px -18px rgba(43, 22, 64, .32);
+  --rich-glass: rgba(255, 255, 255, .62);
+  --rich-btn: linear-gradient(180deg, #FF7C70 0%, #FF5D5D 52%, #EE4747 100%);
+  --rich-btn-shadow: inset 0 1px 0 rgba(255, 255, 255, .4), 0 8px 18px -8px rgba(229, 72, 72, .65);
+  --rich-wash-a: rgba(255, 93, 93, .1);
+  --rich-wash-b: rgba(123, 72, 170, .08);
+  --rich-sheen: rgba(255, 255, 255, .55);
+}
+:root[data-theme="dark"] {
+  --rich-card: linear-gradient(180deg, rgba(255, 255, 255, .065), rgba(255, 255, 255, .025));
+  --rich-edge: rgba(255, 255, 255, .09);
+  --rich-hi: inset 0 1px 0 rgba(255, 255, 255, .08);
+  --rich-shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 18px 40px -18px rgba(0, 0, 0, .65);
+  --rich-shadow-up: 0 2px 4px rgba(0, 0, 0, .4), 0 26px 50px -20px rgba(0, 0, 0, .75);
+  --rich-glass: rgba(255, 255, 255, .05);
+  --rich-wash-a: rgba(255, 93, 93, .12);
+  --rich-wash-b: rgba(140, 90, 210, .14);
+  --rich-sheen: rgba(255, 255, 255, .14);
+}
+
+/* ---------- Light and atmosphere ---------- */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60vw 50vh at 100% 0%, var(--rich-wash-a), transparent 70%),
+    radial-gradient(55vw 55vh at 0% 100%, var(--rich-wash-b), transparent 70%);
+}
+section.alt {
+  background:
+    radial-gradient(70% 120% at 85% 0%, var(--rich-wash-a), transparent 60%),
+    linear-gradient(180deg, var(--alt), color-mix(in oklab, var(--alt) 75%, var(--bg)));
+  box-shadow: var(--rich-hi), inset 0 -1px 0 var(--rich-edge);
+}
+.hero {
+  background-image:
+    radial-gradient(55% 60% at 20% 30%, rgba(255, 93, 93, .16), transparent 70%),
+    radial-gradient(45% 55% at 85% 20%, rgba(140, 90, 210, .18), transparent 70%),
+    linear-gradient(180deg, #1E0E2E, #2B1640 70%);
+}
+:root[data-theme="light"] .hero {
+  background-image:
+    radial-gradient(55% 60% at 20% 30%, rgba(255, 93, 93, .14), transparent 70%),
+    radial-gradient(45% 55% at 85% 20%, rgba(140, 90, 210, .12), transparent 70%),
+    linear-gradient(180deg, var(--tint), var(--bg) 80%);
+}
+
+/* ---------- Header, strip, footer ---------- */
+header.top {
+  background: linear-gradient(180deg, #33194C 0%, var(--hero) 70%);
+  box-shadow: inset 0 -1px 0 rgba(255, 93, 93, .28), 0 10px 30px -20px rgba(20, 10, 30, .8);
+  position: relative; z-index: 5;
+}
+:root[data-theme="light"] header.top { background: linear-gradient(180deg, #FFFFFF, #FDF5F7); box-shadow: inset 0 -1px 0 rgba(255, 93, 93, .22), 0 10px 30px -22px rgba(43, 22, 64, .35); }
+.strip { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), inset 0 -1px 0 rgba(120, 20, 20, .15); }
+footer { background: linear-gradient(180deg, transparent, color-mix(in oklab, var(--alt) 60%, transparent)); }
+
+/* ---------- Panels and cards ---------- */
+.addp, .bankb, .cardf, .case, .dealbox, .dtop, .gh-opt, .lad, .nextb, .paybox, .pxcard, .rcpt, .regbox,
+.resbox, .rrf, .rv, .sets, .statb, .wt, .datapre, details.vf, .mdl, .result {
+  background: var(--rich-card);
+  border-color: var(--rich-edge);
+  box-shadow: var(--rich-hi), var(--rich-shadow);
+}
+.result { border-radius: 16px; padding: 22px 24px; border: 1px solid var(--rich-edge); }
+.dealbox { border-color: color-mix(in oklab, var(--brass) 55%, transparent); }
+
+/* Car cards become lifted cards */
+.grid .car {
+  border-top: 0; padding: 12px 12px 16px; border-radius: 18px;
+  background: var(--rich-card); border: 1px solid var(--rich-edge);
+  box-shadow: var(--rich-hi), var(--rich-shadow);
+  transition: translate .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s;
+}
+.grid .car:hover { box-shadow: var(--rich-hi), var(--rich-shadow-up); }
+.grid .car .ph { border-radius: 12px; }
+.grid .car h3, .grid .car .meta, .grid .car .row, .grid .car .dealtxt { padding: 0 4px; }
+
+/* Photo placeholders: metallic sheen and vignette */
+.ph {
+  background:
+    linear-gradient(115deg, transparent 30%, var(--rich-sheen) 46%, transparent 62%),
+    radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--alt) 40%, #FFFFFF 0%), transparent 60%),
+    linear-gradient(160deg, color-mix(in oklab, var(--alt) 85%, #FFFFFF), color-mix(in oklab, var(--line) 85%, var(--hero)));
+  box-shadow: inset 0 0 0 1px var(--rich-edge), inset 0 -30px 50px -30px rgba(43, 22, 64, .25);
+}
+
+/* Spotlight cards (packages, home fork) pick up the same depth */
+.umt-spot { box-shadow: var(--rich-hi), var(--rich-shadow) !important; }
+.pkgs .pkg.umt-spot { background-image: var(--rich-card); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  background: var(--rich-btn); box-shadow: var(--rich-btn-shadow);
+  transition: filter .2s, translate .2s cubic-bezier(.2, .8, .2, 1), box-shadow .2s;
+}
+.btn:hover { filter: brightness(1.05) saturate(1.05); translate: 0 -1px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 12px 24px -10px rgba(229, 72, 72, .7); }
+.btn:active { translate: 0 1px; box-shadow: inset 0 2px 4px rgba(120, 20, 20, .25); }
+.btn.ghost { background: var(--rich-glass); box-shadow: var(--rich-hi), 0 6px 16px -10px rgba(43, 22, 64, .3); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.umt-btn:not(.umt-btn-ghost) { --star-border-surface: var(--rich-btn) !important; box-shadow: var(--rich-btn-shadow); }
+.umt-btn-ghost { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+
+/* Pills: chips, segmented controls, pager, payment and filter buttons */
+.chip, .seg button, .pager button, .paym button, .vchip, .hb, .upl .fup {
+  background: var(--rich-card); border-color: var(--rich-edge); box-shadow: var(--rich-hi), 0 4px 12px -8px rgba(43, 22, 64, .35);
+  transition: background .2s, box-shadow .2s, border-color .2s;
+}
+.chip:hover, .seg button:hover, .pager button:hover:not(:disabled), .vchip:hover { border-color: color-mix(in oklab, var(--brass) 60%, transparent); }
+.chip[aria-pressed="true"], .seg button[aria-pressed="true"], .vchip[aria-pressed="true"] {
+  background: var(--rich-btn); border-color: transparent; box-shadow: var(--rich-btn-shadow);
+}
+.pager button[aria-current="page"] { background: linear-gradient(180deg, #3D2059, var(--hero)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 8px 18px -10px rgba(43, 22, 64, .7); }
+
+/* Tabs: a glowing underline */
+.tab[aria-selected="true"] { border-bottom-color: var(--brass); box-shadow: 0 8px 14px -12px rgba(255, 93, 93, .9); }
+
+/* ---------- Forms ---------- */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus, select:focus, textarea:focus {
+  box-shadow: 0 1px 0 0 var(--brass), 0 10px 18px -14px rgba(255, 93, 93, .9);
+}
+:focus-visible { box-shadow: 0 0 0 4px rgba(255, 93, 93, .22); }
+
+/* ---------- Floating surfaces ---------- */
+.mdl-bg { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.mdl { border: 1px solid var(--rich-edge); border-radius: 20px; box-shadow: var(--rich-hi), var(--rich-shadow-up); }
+.toast { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 16px 40px -16px rgba(0, 0, 0, .6); }
+#ghb { background: var(--rich-btn); box-shadow: var(--rich-btn-shadow), 0 12px 28px -12px rgba(229, 72, 72, .7); }
+
+/* ---------- Detail ---------- */
+.price, .pan .xl, .monthly b { text-shadow: 0 1px 0 rgba(255, 255, 255, .25); }
+:root[data-theme="dark"] .price, :root[data-theme="dark"] .pan .xl, :root[data-theme="dark"] .monthly b { text-shadow: 0 0 24px rgba(255, 93, 93, .18); }
+details:not(.vf) summary { transition: color .2s; }
+details:not(.vf) summary:hover { color: var(--brass-t); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .grid .car, .chip, .seg button { transition: none; }
+  .btn:hover { translate: none; }
+}
