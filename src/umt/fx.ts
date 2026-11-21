@@ -15,6 +15,8 @@ function screenTransitions() {
   const mo = new MutationObserver((records) => {
     for (const r of records) {
       const v = r.target as HTMLElement
+      // The curtain or the car morph handles its own reveal.
+      if (document.body.dataset.cinema) continue
       if (r.oldValue !== null && !v.hasAttribute('hidden')) {
         gsap.fromTo(
           v,

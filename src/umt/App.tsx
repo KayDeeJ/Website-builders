@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 import engineUrl from './engine/engine.js?url'
+import { useCinema } from './cinema'
 import { useEngineFx } from './fx'
 import { useSiteMotion } from './hooks'
+import Intro from './Intro'
 import QuickBar from './QuickBar'
 import Footer from './markup/Footer'
 import Header from './markup/Header'
@@ -43,6 +45,7 @@ declare global {
 export default function App() {
   useSiteMotion()
   useEngineFx()
+  useCinema()
 
   useEffect(() => {
     if (window.__umtEngine) return
@@ -82,6 +85,7 @@ export default function App() {
         <ProfileView />
       </main>
       <Footer />
+      <Intro />
     </>
   )
 }
