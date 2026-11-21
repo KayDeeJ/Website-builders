@@ -102,7 +102,7 @@ function counters() {
       },
     })
   }
-  const targets = ['grid', 'deal-grid', 'promo']
+  const targets = ['grid', 'deal-grid', 'gain-grid', 'promo']
     .map((id) => document.getElementById(id))
     .filter((x): x is HTMLElement => !!x)
   const mo = new MutationObserver((recs) => {

@@ -40,6 +40,14 @@ export default function HomeView() {
 
   </div><aside className="promo" id="promo" aria-label="Hot deal"></aside>
   </div></div>
+  <section className="gains" aria-labelledby="gains-h"><div className="wrap">
+    <Reveal className="gains-head">
+      <p className="eyebrow">Biggest savings right now</p>
+      <h2 id="gains-h">Furthest below retail value</h2>
+      <p className="muted">The cars priced furthest under their Auto Trader retail value today. <a className="lnk" href="#buy">See all cars</a></p>
+    </Reveal>
+    <div className="grid gain-grid" id="gain-grid"></div>
+  </div></section>
   <section className="alt handsec"><Reveal className="wrap cols">
     <div><h3>If you’re selling</h3><ul className="pts">
       <li><b>Free basic listing.</b> No mandatory preparation spend.</li>

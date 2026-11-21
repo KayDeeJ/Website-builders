@@ -1195,6 +1195,24 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
         return card(cars[i], i, true);
       })
       .join("");
+    /* home: the cars furthest below retail value (largest buyer saving) */
+    var G = $("gain-grid");
+    if (G)
+      G.innerHTML = cars
+        .map(function (c, i) {
+          return i;
+        })
+        .filter(function (i) {
+          return cars[i].mv > cars[i].p && !reserved[i];
+        })
+        .sort(function (a, b) {
+          return cars[b].mv - cars[b].p - (cars[a].mv - cars[a].p);
+        })
+        .slice(0, 5)
+        .map(function (i) {
+          return card(cars[i], i, true);
+        })
+        .join("");
   };
   refreshCards();
 
