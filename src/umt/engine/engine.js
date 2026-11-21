@@ -3826,6 +3826,116 @@
   }
   var ACCT = {},
     curAcct = "Gold";
+
+  /* Tier-up: a completed sale that moves the account into a new tier. */
+  var tierNew = {}; // preview account -> tier name, shown as a profile card until rewards are opened
+  var TICKET = {
+    Silver: { amt: 250, code: "SILVER-250", tk: "silver", silver: true },
+    Gold: { amt: 500, code: "GOLD-500" },
+    Platinum: { amt: 750, code: "PLAT-750", tk: "platinum" },
+  };
+  function tierNewHtml() {
+    var name = tierNew[curAcct];
+    if (!name) return "";
+    var t = TIERS.filter(function (x) {
+        return x[0] === name;
+      })[0],
+      i = TIERS.indexOf(t),
+      nx = TIERS[i + 1],
+      n = soldList().length;
+    return (
+      '<section class="tiernew tier-' +
+      name.toLowerCase() +
+      '" aria-labelledby="tn-h"><div class="medal tn-medal" aria-hidden="true"><span class="mst">' +
+      new Array(i + 2).join("★") +
+      '</span></div><div class="tn-b"><p class="tier-k">New tier · Level ' +
+      (i + 1) +
+      '</p><h3 class="tier-h" id="tn-h">You’re now ' +
+      name +
+      '</h3><p class="tn-s">' +
+      n +
+      " cars sold. " +
+      (nx
+        ? nx[1] - n + " more to " + nx[0] + "."
+        : "You’ve reached our top tier.") +
+      '</p><ul class="tn-p">' +
+      t[2]
+        .map(function (p) {
+          return "<li>" + p + "</li>";
+        })
+        .join("") +
+      '</ul><div class="tn-a"><button type="button" class="btn" id="tnr">See my rewards</button><button type="button" class="lnkb" id="tnx">Dismiss</button></div></div></section>'
+    );
+  }
+  function openRewards() {
+    tierNew[curAcct] = null;
+    ptab = "rv";
+    if (location.hash !== "#profile") {
+      pwant = "rv";
+      location.hash = "#profile";
+      return;
+    }
+    profileView();
+    var tl = $("ptl");
+    if (tl) tl.scrollIntoView({ block: "start" });
+  }
+  window.__umtOpenRewards = openRewards;
+  function celebrate(u) {
+    var n = soldList().length,
+      i = TIERS.indexOf(u.to),
+      nx = TIERS[i + 1],
+      k = TICKET[u.to[0]];
+    tierNew[curAcct] = u.to[0];
+    if (k)
+      addMail("seller", {
+        perk: true,
+        tk: k.tk,
+        silver: k.silver,
+        amt: k.amt,
+        tier: u.to[0],
+        s: u.to[0] + " ticket: " + gbp(k.amt) + " off your next car",
+        t: gbp(k.amt) + " off",
+        tl: "your next car with Union Motor Trade",
+        code: k.code,
+        b:
+          "You’ve reached " +
+          u.to[0] +
+          " with " +
+          n +
+          " cars sold. We’ll take " +
+          gbp(k.amt) +
+          " off the next car you buy from us.",
+        go: "buy",
+      });
+    addMail("seller", {
+      s: "You’ve reached " + u.to[0] + " Trusted Seller",
+      b:
+        "Selling your " +
+        vname(u.v) +
+        " takes you to " +
+        n +
+        " cars sold. Your new rewards are in Vehicle revenue.",
+      veh: u.v.id,
+      go: "rv",
+    });
+    openVeh = u.v.id;
+    var y = window.scrollY;
+    updProf();
+    profileView();
+    window.scrollTo(0, y);
+    window.dispatchEvent(
+      new CustomEvent("umt:tierup", {
+        detail: {
+          from: u.from ? u.from[0] : null,
+          to: u.to[0],
+          level: i + 1,
+          sold: n,
+          perks: u.to[2].slice(),
+          next: nx ? { name: nx[0], need: nx[1] - n } : null,
+        },
+      }),
+    );
+  }
   function useAcct(t) {
     if (!ACCT.Gold) ACCT.Gold = { list: SLIST, mail: MAIL.seller };
     if (!ACCT[t]) {
@@ -8800,7 +8910,8 @@
               "</button>"
             );
           }).join("") +
-          "</div>"
+          "</div>" +
+          tierNewHtml()
         : "") +
       roleHtml() +
       '<div class="tablist" role="tablist" aria-label="Profile" id="ptl" style="margin-top:26px">' +
@@ -9360,6 +9471,7 @@
             });
           }
           if (k === "ssold") {
+            var tBefore = tierOf(soldList().length);
             v.resv = false;
             v.st = "sold";
             v.prog = 2;
@@ -9371,6 +9483,9 @@
               veh: v.id,
               go: "po",
             });
+            var tAfter = tierOf(soldList().length);
+            if (tAfter && tAfter !== tBefore)
+              var tierUp = { from: tBefore, to: tAfter, v: v };
           }
           if (k === "sfault") {
             v.fault = {
@@ -9426,6 +9541,10 @@
               veh: v.id,
               go: "po",
             });
+          }
+          if (tierUp) {
+            celebrate(tierUp);
+            return;
           }
           badges();
           again(v.id);
@@ -9820,6 +9939,12 @@
       updProf();
       profileView();
     };
+    if ($("tnr")) $("tnr").onclick = openRewards;
+    if ($("tnx"))
+      $("tnx").onclick = function () {
+        tierNew[curAcct] = null;
+        profileView();
+      };
     el.querySelectorAll("[data-tpv]").forEach(function (b) {
       b.onclick = function () {
         useAcct(b.dataset.tpv);

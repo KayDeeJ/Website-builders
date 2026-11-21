@@ -15,6 +15,7 @@
 @source "./components";
 @source "./umt/ui.tsx";
 @source "./umt/QuickBar.tsx";
+@source "./umt/TierUp.tsx";
 /* "fixed" appears as a variable name in CountUp; the engine uses .fixed for its fixed-price note. */
 @source not inline("fixed");
 
@@ -128,3 +129,61 @@ h1 .split-parent > *, h2 .split-parent > * { vertical-align: top; }
 
 /* Money figures use fixed-width digits, so totals line up and counting figures never change width. */
 #pm, .sum .row span:last-child, .price, .pan .xl { font-variant-numeric: tabular-nums; }
+
+/* ---------- Tier-up: full-screen moment ---------- */
+.tu { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; overflow-y: auto; padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); color: #F7F1F8; }
+.tu-backdrop { position: fixed; inset: 0; background: radial-gradient(120% 90% at 50% 30%, rgba(60, 30, 85, .96), rgba(20, 10, 28, .98) 70%); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.tu-sparks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+.tu-stage { position: relative; z-index: 1; width: min(560px, 100%); text-align: center; display: grid; justify-items: center; gap: 14px; }
+.tu-medals { position: relative; width: 168px; height: 168px; display: grid; place-items: center; margin-bottom: 8px; }
+.tu-rays { position: absolute; inset: -90px; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 160, .16) 0 6deg, transparent 6deg 18deg);
+  -webkit-mask: radial-gradient(closest-side, #000 25%, transparent 72%); mask: radial-gradient(closest-side, #000 25%, transparent 72%);
+  animation: tu-spin 24s linear infinite; }
+.tu-medal { grid-area: 1 / 1; width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; backface-visibility: hidden;
+  box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .55), 0 18px 50px rgba(0, 0, 0, .45); }
+.tu-medal span { font-size: 1.7rem; letter-spacing: .06em; line-height: 1; }
+.tu-m-bronze { background: radial-gradient(circle at 35% 30%, #FBE6D2, #C98352 60%, #8A4F2A); color: #6B3A1A; }
+.tu-m-silver { background: radial-gradient(circle at 35% 30%, #FFFFFF, #C3CAD3 60%, #7E8794); color: #3E4754; }
+.tu-m-gold { background: radial-gradient(circle at 35% 30%, #FFF6D6, #E9B23E 60%, #B9831B); color: #7A4E07; box-shadow: inset 0 0 0 5px rgba(255, 246, 214, .7), 0 0 60px rgba(245, 196, 81, .45), 0 18px 50px rgba(0, 0, 0, .45); }
+.tu-m-platinum { background: radial-gradient(circle at 35% 30%, #FFFFFF, #DCE3F0 45%, #8E9AB5 80%); color: #35204F; box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .9), 0 0 70px rgba(201, 242, 255, .55), 0 18px 50px rgba(0, 0, 0, .45); }
+.tu-h { font: 300 clamp(2.2rem, 7vw, 3.6rem)/1.05 var(--display); letter-spacing: -.03em; margin: 0; color: #FFFFFF; }
+.tu-h .w { display: inline-block; }
+.tu-name { font-weight: 500; }
+.tu-bronze .tu-name { color: #E6A97B; } .tu-silver .tu-name { color: #E3E8EE; } .tu-gold .tu-name { color: #F5C451; }
+.tu-platinum .tu-name { color: #E8DCFF; text-shadow: 0 0 24px rgba(201, 242, 255, .45); }
+.tu-sub { margin: 0; color: #D8C9E1; font-size: 1.02rem; max-width: 44ch; }
+.tu-perks { list-style: none; margin: 10px 0 6px; padding: 0; display: grid; gap: 8px; width: min(420px, 100%); text-align: left; }
+.tu-perks li { display: flex; gap: 10px; align-items: baseline; padding: 10px 14px; border-radius: 12px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 154, 138, .28); font-size: .97rem; }
+.tu-perks li::before { content: "✓"; color: #FF9A8A; font-weight: 600; }
+.tu-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 18px; margin-top: 10px; }
+.tu-later { background: none; border: 0; color: #D8C9E1; font: 500 1rem var(--body); padding: 12px 6px; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+.tu-later:hover { color: #FFFFFF; }
+body.tu-open #ghb { display: none; }
+@keyframes tu-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .tu-rays { animation: none; } }
+
+/* ---------- Tier-up: card in the seller profile ---------- */
+.tiernew { position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px 22px; align-items: start; margin: 18px 0 6px; padding: 22px 24px; border-radius: 16px; animation: tn-in .7s cubic-bezier(.2, .8, .2, 1) both; }
+.tiernew::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .45) 50%, transparent 70%); transform: translateX(-100%); animation: tn-shine 1.6s .5s ease-out both; pointer-events: none; }
+.tiernew .tn-medal { width: 68px; height: 68px; animation: mpop .7s cubic-bezier(.3, 1.6, .5, 1); }
+.tiernew .tn-medal .mst { font-size: 1rem; letter-spacing: .04em; }
+.tiernew .tier-k { margin: 0; font-size: .82rem; letter-spacing: .06em; text-transform: uppercase; }
+.tiernew .tier-h { margin: 2px 0 4px; font: 400 1.6rem/1.15 var(--display); letter-spacing: -.02em; }
+.tiernew .tn-s { margin: 0 0 10px; }
+.tiernew .tn-p { margin: 0 0 14px; padding-left: 1.1em; }
+.tiernew .tn-p li { margin: 2px 0; }
+.tiernew .tn-a { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.tiernew .lnkb { color: inherit; opacity: .8; text-decoration: underline; text-underline-offset: 4px; }
+@keyframes tn-in { from { opacity: 0; transform: translateY(-10px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes tn-shine { to { transform: translateX(100%); } }
+@media (max-width: 520px) { .tiernew { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .tiernew, .tiernew::before, .tiernew .tn-medal { animation: none; } .tiernew::before { display: none; } }
+/* Card ink per metal, independent of the page theme (the metal grounds are the same in light and dark). */
+.tiernew { color: #3A2604; }
+.tiernew.tier-bronze { color: #3D2010; }
+.tiernew.tier-silver { color: #1F2630; }
+.tiernew.tier-platinum { color: #F3EEFF; }
+.tiernew .tier-k, .tiernew .tier-h, .tiernew .tn-s, .tiernew .tn-p, .tiernew .lnkb { color: inherit; }
+.tiernew .tier-h { text-transform: none; }
+.tiernew .tier-k { opacity: .8; }

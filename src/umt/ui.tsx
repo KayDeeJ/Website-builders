@@ -49,10 +49,11 @@ type ButtonProps = {
   ghost?: boolean
   className?: string
   onDark?: boolean
+  onClick?: () => void
 }
 
 /** The site's coral pill button, with a star of light travelling its edge. */
-export function CoralButton({ children, href, type = 'button', ghost, className = '', onDark }: ButtonProps) {
+export function CoralButton({ children, href, type = 'button', ghost, className = '', onDark, onClick }: ButtonProps) {
   const common = {
     radius: 999,
     thickness: 1,
@@ -77,7 +78,7 @@ export function CoralButton({ children, href, type = 'button', ghost, className 
       {children}
     </StarBorder>
   ) : (
-    <StarBorder as="button" type={type} {...common} {...look}>
+    <StarBorder as="button" type={type} onClick={onClick} {...common} {...look}>
       {children}
     </StarBorder>
   )
