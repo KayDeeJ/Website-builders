@@ -16,7 +16,11 @@ function screenTransitions() {
     for (const r of records) {
       const v = r.target as HTMLElement
       if (r.oldValue !== null && !v.hasAttribute('hidden')) {
-        gsap.fromTo(v, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: EASE, clearProps: 'opacity,visibility,transform' })
+        gsap.fromTo(
+          v,
+          { autoAlpha: 0, y: 18, filter: 'blur(8px)' },
+          { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'expo.out', clearProps: 'opacity,visibility,transform,filter' },
+        )
       }
     }
   })

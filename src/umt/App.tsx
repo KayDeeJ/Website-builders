@@ -3,7 +3,6 @@ import engineUrl from './engine/engine.js?url'
 import { useEngineFx } from './fx'
 import { useSiteMotion } from './hooks'
 import QuickBar from './QuickBar'
-import TierUp from './TierUp'
 import Footer from './markup/Footer'
 import Header from './markup/Header'
 import Sprite from './markup/Sprite'
@@ -83,7 +82,6 @@ export default function App() {
         <ProfileView />
       </main>
       <Footer />
-      <TierUp />
     </>
   )
 }

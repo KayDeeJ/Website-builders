@@ -1019,7 +1019,7 @@
   var tierPv = null;
   function hasPerk(re) {
     if (!user) return false;
-    var t = tierOf(soldList().length),
+    var t = tierOf(tierCount()),
       ok = false;
     if (!t) return false;
     TIERS.forEach(function (x) {
@@ -3294,6 +3294,7 @@
       sc: o.sc || null,
       sd: o.sd || "",
       at: o.at || 0,
+      resv: !!o.resv,
     };
   }
   var SLIST = [
@@ -3315,7 +3316,7 @@
       net: 15300,
       prog: 3,
       fin: true,
-      sc: "wait",
+      sc: "signed",
       sd: "16/11/2026",
       at: 14200,
     }),
@@ -3368,28 +3369,10 @@
       rr: true,
       listed: "20/08/2026",
     }),
-    // Two more past sales: the Gold preview sits one sale away from Platinum (10), so marking
-    // one of its cars sold previews the tier-up.
-    L("p6", 2019, "Skoda", "Karoq SE L", "KN19 WBF", "sold", 39800, {
-      net: 16400,
-      prog: 7,
-      sc: "signed",
-      sd: "18/08/2026",
-      at: 15250,
-      listed: "02/08/2026",
-    }),
-    L("p7", 2018, "Mazda", "3 Sport Nav", "MA18 RZE", "sold", 44100, {
-      net: 11950,
-      prog: 7,
-      sc: "signed",
-      sd: "29/07/2026",
-      at: 11100,
-      fin: true,
-      listed: "14/07/2026",
-    }),
     L("v1", 2019, "BMW", "3 Series 320d", "LS19 KHT", "live", 48210, {
       net: 14250,
       fin: true,
+      resv: true,
     }),
     L("v2", 2018, "Audi", "A4 2.0 TDI S line", "YD18 PFO", "live", 59900, {
       net: 12100,
@@ -3431,11 +3414,11 @@
       net: 10350,
       rr: true,
     }),
-    L("v10", 2019, "Mazda", "MX-5 Sport Nav", "GJ19 RWE", "live", 22700, {
-      net: 14800,
+    L("v10", 2019, "Mazda", "MX-5 Sport Nav", "GJ19 RWE", "sold", 22700, {
+      net: 14800, prog: 7, sc: "signed", sd: "21/08/2026", at: 13700, listed: "06/08/2026",
     }),
-    L("v11", 2020, "Skoda", "Octavia SE L", "KM20 DHX", "live", 44500, {
-      net: 12900,
+    L("v11", 2020, "Skoda", "Octavia SE L", "KM20 DHX", "sold", 44500, {
+      net: 12900, prog: 7, sc: "signed", sd: "02/08/2026", at: 11950, listed: "18/07/2026",
     }),
     L("v12", 2017, "Volvo", "XC60 D4 R-Design", "EO17 LMV", "live", 71200, {
       net: 16750,
@@ -3452,6 +3435,15 @@
         u: true,
         veh: "v20",
         go: "po",
+      },
+      {
+        id: "m1b",
+        s: "One sale away from Platinum",
+        b: "You’ve sold 9 cars with us. Your 2019 BMW 3 Series 320d is reserved by a buyer. Once they complete and you sign the sale contract, you’ll become a Platinum Trusted Seller, our highest tier.",
+        d: "Today, 07:55",
+        u: true,
+        veh: "v1",
+        go: "li",
       },
       {
         id: "m2",
@@ -3471,7 +3463,7 @@
         t: "£500 off",
         tl: "your next car with Union Motor Trade",
         code: "GOLD-500",
-        b: "You’ve reached Gold Trusted Seller. As a thank you, we’ll take £500 off the next car you buy from us.",
+        b: "You’ve reached Gold Trusted Seller with 5 cars sold. As a thank you, we’ll take £500 off the next car you buy from us.",
         d: "Yesterday, 13:20",
         u: true,
         go: "buy",
@@ -3620,7 +3612,7 @@
           o = {
             net: val,
             prog: i === 0 ? 3 : i === 1 && s[1] > 2 ? 6 : 7,
-            sc: i === 0 ? "wait" : "signed",
+            sc: i === 0 && pre === "p" ? "wait" : "signed",
             sd: dd.toLocaleDateString("en-GB"),
             at: Math.round((val * 0.93) / 50) * 50,
             rr: rnd() < 0.3,
@@ -3630,7 +3622,7 @@
             ),
           };
         } else if (st === "live")
-          o = { net: val, rr: rnd() < 0.25, fin: rnd() < 0.2 };
+          o = { net: val, rr: rnd() < 0.25, fin: rnd() < 0.2, resv: i === 0 && pre !== "p" };
         else if (st === "waiting" || st === "rejected")
           o = { offer: val, fin: rnd() < 0.3 };
         else o = {};
@@ -3822,120 +3814,15 @@
         veh: s[0].id,
         go: "po",
       });
+    var rv = list.filter(function (v) { return v.st === "live" && v.resv; })[0],
+      cn = list.filter(function (v) { return v.st === "sold" && v.sc !== "wait"; }).length,
+      nx = TIERS.filter(function (x) { return x[1] > cn; })[0];
+    if (rv && nx && cn + 1 === nx[1])
+      M.unshift({ id: t + "up", s: "One sale away from " + nx[0], b: "You’ve sold " + cn + " cars with us. Your " + vname(rv) + " is reserved by a buyer. Once they complete and you sign the sale contract, you’ll become a " + nx[0] + " Trusted Seller.", d: "Today, 07:55", u: true, veh: rv.id, go: "li" });
     return M;
   }
   var ACCT = {},
     curAcct = "Gold";
-
-  /* Tier-up: a completed sale that moves the account into a new tier. */
-  var tierNew = {}; // preview account -> tier name, shown as a profile card until rewards are opened
-  var TICKET = {
-    Silver: { amt: 250, code: "SILVER-250", tk: "silver", silver: true },
-    Gold: { amt: 500, code: "GOLD-500" },
-    Platinum: { amt: 750, code: "PLAT-750", tk: "platinum" },
-  };
-  function tierNewHtml() {
-    var name = tierNew[curAcct];
-    if (!name) return "";
-    var t = TIERS.filter(function (x) {
-        return x[0] === name;
-      })[0],
-      i = TIERS.indexOf(t),
-      nx = TIERS[i + 1],
-      n = soldList().length;
-    return (
-      '<section class="tiernew tier-' +
-      name.toLowerCase() +
-      '" aria-labelledby="tn-h"><div class="medal tn-medal" aria-hidden="true"><span class="mst">' +
-      new Array(i + 2).join("★") +
-      '</span></div><div class="tn-b"><p class="tier-k">New tier · Level ' +
-      (i + 1) +
-      '</p><h3 class="tier-h" id="tn-h">You’re now ' +
-      name +
-      '</h3><p class="tn-s">' +
-      n +
-      " cars sold. " +
-      (nx
-        ? nx[1] - n + " more to " + nx[0] + "."
-        : "You’ve reached our top tier.") +
-      '</p><ul class="tn-p">' +
-      t[2]
-        .map(function (p) {
-          return "<li>" + p + "</li>";
-        })
-        .join("") +
-      '</ul><div class="tn-a"><button type="button" class="btn" id="tnr">See my rewards</button><button type="button" class="lnkb" id="tnx">Dismiss</button></div></div></section>'
-    );
-  }
-  function openRewards() {
-    tierNew[curAcct] = null;
-    ptab = "rv";
-    if (location.hash !== "#profile") {
-      pwant = "rv";
-      location.hash = "#profile";
-      return;
-    }
-    profileView();
-    var tl = $("ptl");
-    if (tl) tl.scrollIntoView({ block: "start" });
-  }
-  window.__umtOpenRewards = openRewards;
-  function celebrate(u) {
-    var n = soldList().length,
-      i = TIERS.indexOf(u.to),
-      nx = TIERS[i + 1],
-      k = TICKET[u.to[0]];
-    tierNew[curAcct] = u.to[0];
-    if (k)
-      addMail("seller", {
-        perk: true,
-        tk: k.tk,
-        silver: k.silver,
-        amt: k.amt,
-        tier: u.to[0],
-        s: u.to[0] + " ticket: " + gbp(k.amt) + " off your next car",
-        t: gbp(k.amt) + " off",
-        tl: "your next car with Union Motor Trade",
-        code: k.code,
-        b:
-          "You’ve reached " +
-          u.to[0] +
-          " with " +
-          n +
-          " cars sold. We’ll take " +
-          gbp(k.amt) +
-          " off the next car you buy from us.",
-        go: "buy",
-      });
-    addMail("seller", {
-      s: "You’ve reached " + u.to[0] + " Trusted Seller",
-      b:
-        "Selling your " +
-        vname(u.v) +
-        " takes you to " +
-        n +
-        " cars sold. Your new rewards are in Vehicle revenue.",
-      veh: u.v.id,
-      go: "rv",
-    });
-    openVeh = u.v.id;
-    var y = window.scrollY;
-    updProf();
-    profileView();
-    window.scrollTo(0, y);
-    window.dispatchEvent(
-      new CustomEvent("umt:tierup", {
-        detail: {
-          from: u.from ? u.from[0] : null,
-          to: u.to[0],
-          level: i + 1,
-          sold: n,
-          perks: u.to[2].slice(),
-          next: nx ? { name: nx[0], need: nx[1] - n } : null,
-        },
-      }),
-    );
-  }
   function useAcct(t) {
     if (!ACCT.Gold) ACCT.Gold = { list: SLIST, mail: MAIL.seller };
     if (!ACCT[t]) {
@@ -4468,6 +4355,16 @@
       return v.st === "sold";
     });
   }
+  function tierCount() {
+    return SLIST.filter(function (v) {
+      return v.st === "sold" && v.sc !== "wait";
+    }).length;
+  }
+  function nextTier() {
+    return TIERS.filter(function (x) {
+      return x[1] > tierCount();
+    })[0] || null;
+  }
   function paidOf(v) {
     return v.rr ? rrNet(v) : v.net;
   }
@@ -4531,6 +4428,85 @@
     });
     return t;
   }
+
+  var TUP = {
+    Bronze: { h: "Welcome to <b>Bronze</b>", p: "You’re now a Trusted Seller. Your first rewards are yours from today.", c: ["#F3C9A0", "#C98652", "#FFE3B0", "#FFFFFF"] },
+    Silver: { h: "You’re now <b>Silver</b>", p: "Your listings now show higher for buyers, and you’re paid faster.", c: ["#FFFFFF", "#DDE3EC", "#BFE3FF", "#C9D0DC"] },
+    Gold: { h: "Welcome to <b>Gold</b>", p: "Faster payouts, half-price Retail Ready and first pick of hot deals.", c: ["#FFF1C1", "#FFD36B", "#FFB347", "#FFFFFF"] },
+    Platinum: { h: "Welcome to <b>Platinum</b>", p: "Our highest tier. You’re one of our very best sellers, and these rewards are yours from today.", c: ["#C9F2FF", "#E8C8FF", "#FFE3B0", "#BFFFE6", "#FFFFFF"] },
+  };
+  function tierMails(t, n) {
+    var id = "up" + Date.now(), L = t[0], M = [];
+    var W = function (s, b) { return { id: id + "w", s: s, b: b, u: true, go: "li" }; };
+    if (L === "Bronze") M = [W("Welcome to Bronze Trusted Seller", "You’ve sold your first car with us. Here’s your first reward, and every sale from here moves you towards Silver."),
+      { id: id + "k1", perk: true, tk: "bronze", amt: 100, tier: "Bronze", s: "Bronze ticket: £100 off your next car", t: "£100 off", tl: "your next car with Union Motor Trade", code: "BRONZE-100", b: "You’ve reached Bronze. As a thank you, we’ll take £100 off the next car you buy from us.", u: true, go: "buy" },
+      { id: id + "k2", perk: true, tk: "bronze", s: "Bronze ticket: £50 for every friend you refer", t: "£50", tl: "for every friend who buys or sells with us", code: "REFER-50", b: "Share your referral code. When a friend buys or sells a car with us, you get £50.", u: true, go: "li" }];
+    else if (L === "Silver") M = [W("You’ve reached Silver Trusted Seller", "With " + n + " cars sold, your listings now show higher for buyers and you’re paid within 48 hours of handover."),
+      { id: id + "k1", perk: true, tk: "silver", silver: true, amt: 250, tier: "Silver", s: "Silver ticket: £250 off your next car", t: "£250 off", tl: "your next car with Union Motor Trade", code: "SILVER-250", b: "You’ve reached Silver with " + n + " cars sold. We’ll take £250 off the next car you buy from us. This replaces your Bronze £100 ticket.", u: true, go: "buy" },
+      { id: id + "k2", perk: true, tk: "silver", silver: true, s: "Silver ticket: priority placement for your listings", t: "Priority", tl: "placement for every car you list", code: "SILVER-TOP", b: "Your listings now appear higher for buyers.", u: true, go: "li" }];
+    else if (L === "Gold") M = [W("Welcome to Gold Trusted Seller", "With " + n + " cars sold, you’re now Gold. You’re paid within 24 hours of handover, get Retail Ready at half price and first pick of hot-deal slots."),
+      { id: id + "k1", perk: true, amt: 500, tier: "Gold", s: "Gold ticket: £500 off your next car", t: "£500 off", tl: "your next car with Union Motor Trade", code: "GOLD-500", b: "You’ve reached Gold with " + n + " cars sold. We’ll take £500 off the next car you buy from us. This replaces your Silver £250 ticket.", u: true, go: "buy" },
+      { id: id + "k2", perk: true, s: "Gold ticket: Retail Ready pack at half price", t: "50% off", tl: "the Retail Ready pack on every car you list", code: "RR-HALF", b: "Gold sellers get our Retail Ready pack at half price. It’s applied automatically on your offer letters.", u: true, go: "po" }];
+    else M = [W("Welcome to Platinum, our highest tier", "With " + n + " cars sold, you’re one of our very best sellers. Thank you. Your new rewards are below, and your account manager will be in touch today."),
+      { id: id + "k1", perk: true, tk: "platinum", amt: 750, tier: "Platinum", s: "Platinum ticket: £750 off your next car", t: "£750 off", tl: "your next car with Union Motor Trade", code: "PLAT-750", b: "As a Platinum seller, we’ll take £750 off the next car you buy from us. This replaces your Gold £500 ticket.", u: true, go: "buy" },
+      { id: id + "k2", perk: true, tk: "platinum", s: "Platinum ticket: free Retail Ready on every car", t: "Free", tl: "Retail Ready pack on every car you list", code: "RR-FREE", b: "No pack fee for you, ever. It’s applied automatically on your offer letters.", u: true, go: "po" },
+      { id: id + "am", s: "Meet your account manager, Sophie", b: "Hi, I’m Sophie Reid, your account manager. Call or message me directly about any car you’re selling: 0113 496 0123 (sample). I’ll also check in before each listing goes live.", u: true, go: "ov" }];
+    M.reverse().forEach(function (m) { addMail("seller", m); });
+  }
+  function tierUp(t0, t1) {
+    var n = tierCount(), L = t1[0], lo = L.toLowerCase(), from = t0 ? t0[0] : null, flo = from ? from.toLowerCase() : "none", C = TUP[L], T = [], done = false;
+    tierMails(t1, n); updProf();
+    var o = document.createElement("div");
+    o.className = "tupv f-" + flo + " t-" + lo;
+    o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "You’ve reached " + L); o.setAttribute("data-lenis-prevent", "");
+    var st = "";
+    for (var i = 0; i < 80; i++) { var z = Math.random() * 2.4 + 0.8; st += '<i style="left:' + (Math.random() * 100).toFixed(1) + "%;top:" + (Math.random() * 100).toFixed(1) + "%;width:" + z.toFixed(1) + "px;height:" + z.toFixed(1) + "px;animation-delay:" + (Math.random() * 2.6).toFixed(2) + 's"></i>'; }
+    o.innerHTML = '<div class="tup-neb n-' + lo + '"></div><div class="tup-sky">' + st + '</div><div class="tup-fl"></div><button type="button" class="tup-skip">Skip</button><div class="tup-in"><p class="tup-k">Sale contract signed · ' + n + ' cars sold</p><div class="tup-cw"><div class="tup-card tc-' + (from ? flo : "none") + '"><div class="tup-medal" aria-hidden="true">★</div><span class="tup-tn">' + (from || "Seller") + '</span><span class="tup-sub">' + (from ? "Trusted Seller" : "Union Motor Trade") + '</span></div></div><h2 class="tup-h">' + C.h + '</h2><p class="tup-p">' + C.p + '</p><ul class="tup-perks">' + t1[2].map(function (p) { return "<li>" + p + "</li>"; }).join("") + '</ul><div class="tup-nav"><button type="button" class="btn" data-tupm>See your rewards in Mail</button><button type="button" class="btn ghost" data-tupx>Continue</button></div></div>';
+    document.body.appendChild(o); document.body.classList.add("fsopen");
+    var q = function (x) { return o.querySelector(x); }, card = q(".tup-card"), cw = q(".tup-cw");
+    function at(ms, f) { T.push(setTimeout(f, ms)); }
+    function burst() {
+      for (var i = 0; i < 46; i++) { var a = Math.random() * Math.PI * 2, d = 110 + Math.random() * 190, z = 3 + Math.random() * 6, e = document.createElement("span"); e.className = "tup-sp"; e.style.cssText = "--c:" + C.c[i % C.c.length] + ";--x:" + (Math.cos(a) * d).toFixed(0) + "px;--y:" + (Math.sin(a) * d).toFixed(0) + "px;width:" + z + "px;height:" + z + "px;animation-delay:" + (Math.random() * 0.15).toFixed(2) + "s"; cw.appendChild(e); }
+      var r = document.createElement("span"); r.className = "tup-ring"; cw.appendChild(r);
+      setTimeout(function () { cw.querySelectorAll(".tup-sp,.tup-ring").forEach(function (x) { x.remove(); }); }, 1700);
+    }
+    function toNew() {
+      card.className = "tup-card flip tc-" + (from ? flo : "none");
+      setTimeout(function () { card.className = "tup-card tc-" + lo; card.style.transition = "none"; card.style.transform = "rotateY(-90deg) scale(1.08)"; q(".tup-tn").textContent = L; q(".tup-sub").textContent = "Trusted Seller"; void card.offsetWidth; card.style.transition = ""; card.style.transform = ""; card.classList.add("in"); o.classList.add("up"); }, 320);
+    }
+    function finish() {
+      if (done) return; done = true; T.forEach(clearTimeout);
+      if (card.className.indexOf("tc-" + lo) < 0) { card.className = "tup-card tc-" + lo; q(".tup-tn").textContent = L; q(".tup-sub").textContent = "Trusted Seller"; }
+      card.classList.add("in"); o.classList.add("up");
+      ["tup-h", "tup-p", "tup-nav"].forEach(function (c) { q("." + c).classList.add("in"); });
+      o.querySelectorAll(".tup-perks li").forEach(function (l) { l.classList.add("in"); });
+      q(".tup-skip").hidden = true; q("[data-tupm]").focus();
+    }
+    function close(m) {
+      T.forEach(clearTimeout); o.classList.remove("on");
+      setTimeout(function () {
+        o.remove(); document.body.classList.remove("fsopen"); updProf(); ptab = m ? "ml" : "ov";
+        if (location.hash !== "#profile") location.hash = "#profile"; else profileView();
+        setTimeout(function () { var x = document.getElementById("pt-" + ptab); if (x) { x.click(); x.scrollIntoView({ block: "center" }); } }, 80);
+      }, 350);
+    }
+    q(".tup-skip").onclick = finish;
+    q("[data-tupx]").onclick = function () { close(false); };
+    q("[data-tupm]").onclick = function () { close(true); };
+    o.onkeydown = function (e) { if (e.key === "Escape") close(false); };
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    requestAnimationFrame(function () {
+      o.classList.add("on"); q(".tup-skip").focus();
+      if (reduce) { finish(); return; }
+      at(150, function () { card.classList.add("in"); });
+      at(1300, function () { card.classList.remove("in"); card.classList.add("charge"); });
+      at(2450, function () { q(".tup-fl").classList.add("go"); toNew(); });
+      at(2700, burst);
+      at(3300, function () { q(".tup-h").classList.add("in"); q(".tup-p").classList.add("in"); });
+      o.querySelectorAll(".tup-perks li").forEach(function (l, i) { at(3900 + i * 320, function () { l.classList.add("in"); }); });
+      at(3900 + t1[2].length * 320 + 250, finish);
+    });
+  }
   function cnum(v, pre, money) {
     return (
       '<span class="cn" data-cnt="' +
@@ -4577,7 +4553,7 @@
     });
   }
   function badgeHtml() {
-    var n = soldList().length,
+    var n = tierCount(),
       t = tierOf(n),
       nx = null;
     TIERS.forEach(function (x) {
@@ -4677,7 +4653,7 @@
     );
   }
   function ladderHtml() {
-    var n = soldList().length,
+    var n = tierCount(),
       cur = tierOf(n);
     var desc = {
       Bronze: "Your first sale",
@@ -4721,7 +4697,7 @@
         );
       }).join("") +
       "</ol>" +
-      '<div class="ladrules"><h4 style="margin:0 0 8px">What counts as a sale</h4><ul class="pts"><li><b>A sale counts once it’s complete:</b> the buyer has collected the car and you’ve been paid.</li><li><b>Your declaration has to match.</b> If the AA or RAC inspection finds something you didn’t declare, that sale doesn’t count towards your tier.</li><li><b>Pulling out after signing doesn’t count,</b> and a withdrawn or unsold car doesn’t count either.</li><li><b>Climb faster</b> by listing more cars. Selling with your mechanical guarantee or Retail Ready doesn’t change your count, but it does earn you more per car.</li></ul><p class="note small" style="margin:10px 0 0"><span class="todo">[Whether tiers are based on all-time or yearly sales, and whether you can drop a tier, to be confirmed.]</span></p></div></section>'
+      '<div class="ladrules"><h4 style="margin:0 0 8px">What counts as a sale</h4><ul class="pts"><li><b>A sale counts once you’ve signed the sale contract:</b> the buyer has committed and the deal is legally agreed.</li><li><b>Your declaration has to match.</b> If the AA or RAC inspection finds something you didn’t declare, that sale doesn’t count towards your tier.</li><li><b>Pulling out after signing doesn’t count,</b> and a withdrawn or unsold car doesn’t count either.</li><li><b>Climb faster</b> by listing more cars. Selling with your mechanical guarantee or Retail Ready doesn’t change your count, but it does earn you more per car.</li></ul><p class="note small" style="margin:10px 0 0"><span class="todo">[Whether tiers are based on all-time or yearly sales, and whether you can drop a tier, to be confirmed.]</span></p></div></section>'
     );
   }
   function sellerRv() {
@@ -4820,7 +4796,7 @@
           return dnum(b.sd) - dnum(a.sd);
         }),
       t = revTotals(),
-      T = tierOf(S.length);
+      T = tierOf(tierCount());
     el.innerHTML =
       '<a class="back" href="#profile" id="revback">Back to your profile</a><div class="rcpt"><div class="rc-h"><div><p class="muted small" style="margin:0">Union Motor Trade' +
       (T
@@ -8018,6 +7994,9 @@
         '</button><button type="button" class="btn ghost" data-slow="keep" data-v="' +
         v.id +
         '">Keep my price</button></div></div>';
+    var nt = nextTier();
+    if (nt && tierCount() + 1 === nt[1])
+      h += '<p class="perkln tup-hint">✦ <b>This sale takes you to ' + nt[0] + '.</b> When the buyer completes and you sign the sale contract, you’ll become a ' + nt[0] + ' Trusted Seller.</p>';
     var pv = [];
     if (!v.resv) pv.push(["sres", "A buyer reserves it"]);
     else
@@ -8881,11 +8860,11 @@
       '</h2><span class="phl"><a class="lnk" href="#settings">Account settings</a><a class="lnk" href="#help">Help</a><a class="lnk" href="#refer">Refer a friend</a><button class="btn ghost" id="so" type="button">Sign out</button></span></div><p class="muted">' +
       (user.role === "buyer" ? "Buyer" : "Seller") +
       " account." +
-      (user.role === "seller" && tierOf(soldList().length)
+      (user.role === "seller" && tierOf(tierCount())
         ? ' <span class="tchip tier-' +
-          tierOf(soldList().length)[0].toLowerCase() +
+          tierOf(tierCount())[0].toLowerCase() +
           '">★ ' +
-          tierOf(soldList().length)[0] +
+          tierOf(tierCount())[0] +
           " Trusted Seller</span>"
         : "") +
       (user.role === "buyer"
@@ -8910,8 +8889,7 @@
               "</button>"
             );
           }).join("") +
-          "</div>" +
-          tierNewHtml()
+          "</div>"
         : "") +
       roleHtml() +
       '<div class="tablist" role="tablist" aria-label="Profile" id="ptl" style="margin-top:26px">' +
@@ -9471,7 +9449,6 @@
             });
           }
           if (k === "ssold") {
-            var tBefore = tierOf(soldList().length);
             v.resv = false;
             v.st = "sold";
             v.prog = 2;
@@ -9479,13 +9456,10 @@
             v.sc = "wait";
             addMail("seller", {
               s: "Your " + vname(v) + " has sold",
-              b: "Good news: the buyer has committed. Next comes the AA or RAC inspection. The buyer’s payment is then held safely and released to you after the handover. Please sign the sale contract in Documents.",
+              b: "Good news: the buyer has committed. Next comes the AA or RAC inspection. The buyer’s payment is then held safely and released to you after the handover. Please sign the sale contract in Documents." + (function () { var nt = nextTier(); return nt && tierCount() + 1 === nt[1] ? " Signing it makes you a " + nt[0] + " Trusted Seller." : ""; })(),
               veh: v.id,
-              go: "po",
+              go: "dc",
             });
-            var tAfter = tierOf(soldList().length);
-            if (tAfter && tAfter !== tBefore)
-              var tierUp = { from: tBefore, to: tAfter, v: v };
           }
           if (k === "sfault") {
             v.fault = {
@@ -9542,20 +9516,22 @@
               go: "po",
             });
           }
-          if (tierUp) {
-            celebrate(tierUp);
-            return;
-          }
           badges();
           again(v.id);
         };
       });
       p.querySelectorAll("[data-dsign]").forEach(function (b) {
         b.onclick = function () {
-          var v = vById(b.dataset.dsign);
+          var v = vById(b.dataset.dsign),
+            t0 = tierOf(tierCount());
           v.sc = "signed";
+          var t1 = tierOf(tierCount());
           badges();
           again(v.id);
+          if (t1 && (!t0 || t0[0] !== t1[0]))
+            setTimeout(function () {
+              tierUp(t0, t1);
+            }, 250);
         };
       });
       p.querySelectorAll("[data-sign]").forEach(function (b) {
@@ -9939,12 +9915,6 @@
       updProf();
       profileView();
     };
-    if ($("tnr")) $("tnr").onclick = openRewards;
-    if ($("tnx"))
-      $("tnx").onclick = function () {
-        tierNew[curAcct] = null;
-        profileView();
-      };
     el.querySelectorAll("[data-tpv]").forEach(function (b) {
       b.onclick = function () {
         useAcct(b.dataset.tpv);

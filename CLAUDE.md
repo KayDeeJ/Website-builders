@@ -46,6 +46,10 @@ Vite + React 19 + TypeScript, Tailwind CSS v4 (theme + utilities only, no prefli
 - `src/umt/ui.tsx`: Headline (SplitText), CoralButton (StarBorder), Spot (SpotlightCard in site colours), Reveal
   (AnimatedContent). Animated parts remount when their screen is shown (`useShownKey`), since screens start hidden.
 - `src/umt/legacy.css`: the original stylesheet. `src/index.css`: fonts and the upgrade layer.
+- Seller tiers: the engine's `tierUp()` plays the tier celebration when a sale contract is signed (styles in
+  `src/umt/tierup.css`). This matches the live site's version, built in another session.
+- `src/umt/fx.ts`: premium motion layer over engine-built screens (screen transitions, sliding car grid, counting
+  finance figures, rolling countdown). It never edits engine text the engine reads back.
 - Tailwind only scans `src/components` and the new React files: engine class names (e.g. `.fixed`) must never become
   utilities.
 
