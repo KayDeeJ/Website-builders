@@ -3368,6 +3368,25 @@
       rr: true,
       listed: "20/08/2026",
     }),
+    // Two more past sales: the Gold preview sits one sale away from Platinum (10), so marking
+    // one of its cars sold previews the tier-up.
+    L("p6", 2019, "Skoda", "Karoq SE L", "KN19 WBF", "sold", 39800, {
+      net: 16400,
+      prog: 7,
+      sc: "signed",
+      sd: "18/08/2026",
+      at: 15250,
+      listed: "02/08/2026",
+    }),
+    L("p7", 2018, "Mazda", "3 Sport Nav", "MA18 RZE", "sold", 44100, {
+      net: 11950,
+      prog: 7,
+      sc: "signed",
+      sd: "29/07/2026",
+      at: 11100,
+      fin: true,
+      listed: "14/07/2026",
+    }),
     L("v1", 2019, "BMW", "3 Series 320d", "LS19 KHT", "live", 48210, {
       net: 14250,
       fin: true,
@@ -3452,7 +3471,7 @@
         t: "£500 off",
         tl: "your next car with Union Motor Trade",
         code: "GOLD-500",
-        b: "You’ve reached Gold Trusted Seller with 7 cars sold. As a thank you, we’ll take £500 off the next car you buy from us.",
+        b: "You’ve reached Gold Trusted Seller. As a thank you, we’ll take £500 off the next car you buy from us.",
         d: "Yesterday, 13:20",
         u: true,
         go: "buy",
