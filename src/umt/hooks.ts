@@ -71,7 +71,7 @@ export function useSiteMotion() {
  * a key that changes each time the enclosing screen (.view) is shown, so a component keyed on
  * it remounts and plays its entrance when the visitor actually arrives.
  */
-export function useShownKey(ref: React.RefObject<HTMLElement | null>) {
+export function useShownKey(ref: React.RefObject<Element | null>) {
   const [key, setKey] = useState(0)
   useEffect(() => {
     const view = ref.current?.closest('.view')

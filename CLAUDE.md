@@ -48,6 +48,9 @@ Vite + React 19 + TypeScript, Tailwind CSS v4 (theme + utilities only, no prefli
 - `src/umt/legacy.css`: the original stylesheet. `src/index.css`: fonts and the upgrade layer.
 - Seller tiers: the engine's `tierUp()` plays the tier celebration when a sale contract is signed (styles in
   `src/umt/tierup.css`). This matches the live site's version, built in another session.
+- Home hero: `src/umt/KeyHandover.tsx`, an original SVG + GSAP illustration of keys being handed over in front of a
+  badge-free hatchback; the car unlocks. `src/umt/Intro.tsx` (first visit), `src/umt/cinema.ts` (curtain and car
+  morph), `src/umt/tactile.ts` (magnetic buttons, View lens, glare, counting prices), `src/umt/views/DealStory.tsx`.
 - `src/umt/fx.ts`: premium motion layer over engine-built screens (screen transitions, sliding car grid, counting
   finance figures, rolling countdown). It never edits engine text the engine reads back.
 - Tailwind only scans `src/components` and the new React files: engine class names (e.g. `.fixed`) must never become

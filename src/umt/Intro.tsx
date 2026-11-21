@@ -2,6 +2,13 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { reducedMotion } from './hooks'
 
+declare global {
+  interface Window {
+    /** True while the first-visit intro is playing. */
+    __umtIntro?: boolean
+  }
+}
+
 const seen = () => {
   try {
     return sessionStorage.getItem('umt-intro') === '1'
