@@ -2,6 +2,7 @@ import heroScene from '../assets/hero-scene.jpg'
 
 import BlurText from '@/components/BlurText'
 import Showroom from '../showroom/Showroom'
+import DealStory from './DealStory'
 import { CoralButton, Headline, Reveal, Spot } from '../ui'
 
 /* From the original Union Motor Trade markup, upgraded with React Bits. Ids and classes are hooks for the engine. */
@@ -58,6 +59,7 @@ export default function HomeView() {
       <li><b>Hot deals</b> on selected cars. <a className="lnk" href="#deals">See this month’s deals</a></li>
     </ul></div>
   </Reveal></section>
+  <DealStory />
 </div>
     </>
   )
