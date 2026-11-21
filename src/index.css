@@ -190,3 +190,13 @@ h1 .split-parent > *, h2 .split-parent > * { vertical-align: top; }
   .ds-stage p { position: static; opacity: 1; transform: none; font: 400 1rem/1.5 var(--body); margin-top: 4px; }
   .ds-dot { background: #FF5D5D; border-color: #FF5D5D; }
 }
+
+/* ---------- Tactile details ---------- */
+.lens { position: fixed; left: 0; top: 0; z-index: 330; width: 84px; height: 84px; border-radius: 50%; pointer-events: none; display: grid; place-items: center;
+  background: rgba(255, 93, 93, .88); color: #1E1426; font: 600 .82rem var(--body); letter-spacing: .08em; text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(255, 93, 93, .35); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+body.lens-on .car a.pl, body.lens-on .fork a.fork-link { cursor: none; }
+.car .ph::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .35s;
+  background: radial-gradient(240px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, .45), transparent 60%); mix-blend-mode: soft-light; }
+.car:hover .ph::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .car .ph::after { display: none; } }

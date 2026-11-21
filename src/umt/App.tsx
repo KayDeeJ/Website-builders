@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import engineUrl from './engine/engine.js?url'
 import { useCinema } from './cinema'
+import { useTactile } from './tactile'
 import { useEngineFx } from './fx'
 import { useSiteMotion } from './hooks'
 import Intro from './Intro'
@@ -46,6 +47,7 @@ export default function App() {
   useSiteMotion()
   useEngineFx()
   useCinema()
+  useTactile()
 
   useEffect(() => {
     if (window.__umtEngine) return
