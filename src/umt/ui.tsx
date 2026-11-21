@@ -14,7 +14,7 @@ type Part = string | { hl: string }
  * keep the site's highlight style (.hl). Screen readers get the plain heading text.
  */
 export function Headline({ as: Tag = 'h2', parts, className }: { as?: 'h1' | 'h2'; parts: Part[]; className?: string }) {
-  const label = parts.map((p) => (typeof p === 'string' ? p : p.hl)).join('')
+  const label = parts.map((p) => (typeof p === 'string' ? p : p.hl).trim()).join(' ')
   const ref = useRef<HTMLHeadingElement>(null)
   const shown = useShownKey(ref)
   return (

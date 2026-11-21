@@ -1,10 +1,11 @@
 /*
- * Union Motor Trade engine: the original site logic, kept as written.
+ * Site engine: the original site logic, kept as written. Business name: SITE.name (src/lib/site.ts).
  * It runs as a classic script after React has rendered the markup (see src/umt/App.tsx),
  * and drives the screens that are still engine-built: car pages, profile, part-exchange,
  * payments, finance, ID checks, delivery, settings, help, referrals and revenue.
  * Change: the floating quick bar (.qbar) now shares the nav's aria-current highlighting.
  */
+var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix: "UMT" };
 (function () {
   var EMAIL = "hello@example.co.uk"; // replace with your real inbox
   var views = [
@@ -975,7 +976,7 @@
   function refCode() {
     return (
       esc(
-        ((user && user.first) || "UMT").toUpperCase().replace(/[^A-Z]/g, ""),
+        ((user && user.first) || SITE.refPrefix).toUpperCase().replace(/[^A-Z]/g, ""),
       ) + "-50"
     );
   }
@@ -3461,7 +3462,7 @@
         tier: "Gold",
         s: "Gold ticket: £500 off your next car",
         t: "£500 off",
-        tl: "your next car with Union Motor Trade",
+        tl: "your next car with " + SITE.name,
         code: "GOLD-500",
         b: "You’ve reached Gold Trusted Seller with 5 cars sold. As a thank you, we’ll take £500 off the next car you buy from us.",
         d: "Yesterday, 13:20",
@@ -3669,7 +3670,7 @@
           tier: "Bronze",
           s: "Bronze ticket: £100 off your next car",
           t: "£100 off",
-          tl: "your next car with Union Motor Trade",
+          tl: "your next car with " + SITE.name,
           code: "BRONZE-100",
           b:
             "You’ve reached Bronze with " +
@@ -3715,7 +3716,7 @@
           tier: "Silver",
           s: "Silver ticket: £250 off your next car",
           t: "£250 off",
-          tl: "your next car with Union Motor Trade",
+          tl: "your next car with " + SITE.name,
           code: "SILVER-250",
           b:
             "You’ve reached Silver with " +
@@ -3761,7 +3762,7 @@
           tier: "Platinum",
           s: "Platinum ticket: £750 off your next car",
           t: "£750 off",
-          tl: "your next car with Union Motor Trade",
+          tl: "your next car with " + SITE.name,
           code: "PLAT-750",
           b: "As a Platinum seller, we’ll take £750 off the next car you buy from us.",
           d: "Today, 08:45",
@@ -4244,7 +4245,7 @@
         "</b></p>" +
         '<label class="agree" id="c1-' +
         v.id +
-        '"><input type="checkbox" data-c1><span>I’ve spoken to the Union Motor Trade team on the phone and I’m happy with this amount.</span></label>' +
+        '"><input type="checkbox" data-c1><span>I’ve spoken to the ' + SITE.name + ' team on the phone and I’m happy with this amount.</span></label>' +
         '<label class="agree" id="c2-' +
         v.id +
         '"><input type="checkbox" data-c2><span>It’s been explained clearly what can change it: anything the inspection finds that I didn’t declare (damage, faults or mileage), or missing keys, service history or documents. If I choose Retail Ready, the pack fee comes out of my sale proceeds.</span></label>' +
@@ -4439,16 +4440,16 @@
     var id = "up" + Date.now(), L = t[0], M = [];
     var W = function (s, b) { return { id: id + "w", s: s, b: b, u: true, go: "li" }; };
     if (L === "Bronze") M = [W("Welcome to Bronze Trusted Seller", "You’ve sold your first car with us. Here’s your first reward, and every sale from here moves you towards Silver."),
-      { id: id + "k1", perk: true, tk: "bronze", amt: 100, tier: "Bronze", s: "Bronze ticket: £100 off your next car", t: "£100 off", tl: "your next car with Union Motor Trade", code: "BRONZE-100", b: "You’ve reached Bronze. As a thank you, we’ll take £100 off the next car you buy from us.", u: true, go: "buy" },
+      { id: id + "k1", perk: true, tk: "bronze", amt: 100, tier: "Bronze", s: "Bronze ticket: £100 off your next car", t: "£100 off", tl: "your next car with " + SITE.name, code: "BRONZE-100", b: "You’ve reached Bronze. As a thank you, we’ll take £100 off the next car you buy from us.", u: true, go: "buy" },
       { id: id + "k2", perk: true, tk: "bronze", s: "Bronze ticket: £50 for every friend you refer", t: "£50", tl: "for every friend who buys or sells with us", code: "REFER-50", b: "Share your referral code. When a friend buys or sells a car with us, you get £50.", u: true, go: "li" }];
     else if (L === "Silver") M = [W("You’ve reached Silver Trusted Seller", "With " + n + " cars sold, your listings now show higher for buyers and you’re paid within 48 hours of handover."),
-      { id: id + "k1", perk: true, tk: "silver", silver: true, amt: 250, tier: "Silver", s: "Silver ticket: £250 off your next car", t: "£250 off", tl: "your next car with Union Motor Trade", code: "SILVER-250", b: "You’ve reached Silver with " + n + " cars sold. We’ll take £250 off the next car you buy from us. This replaces your Bronze £100 ticket.", u: true, go: "buy" },
+      { id: id + "k1", perk: true, tk: "silver", silver: true, amt: 250, tier: "Silver", s: "Silver ticket: £250 off your next car", t: "£250 off", tl: "your next car with " + SITE.name, code: "SILVER-250", b: "You’ve reached Silver with " + n + " cars sold. We’ll take £250 off the next car you buy from us. This replaces your Bronze £100 ticket.", u: true, go: "buy" },
       { id: id + "k2", perk: true, tk: "silver", silver: true, s: "Silver ticket: priority placement for your listings", t: "Priority", tl: "placement for every car you list", code: "SILVER-TOP", b: "Your listings now appear higher for buyers.", u: true, go: "li" }];
     else if (L === "Gold") M = [W("Welcome to Gold Trusted Seller", "With " + n + " cars sold, you’re now Gold. You’re paid within 24 hours of handover, get Retail Ready at half price and first pick of hot-deal slots."),
-      { id: id + "k1", perk: true, amt: 500, tier: "Gold", s: "Gold ticket: £500 off your next car", t: "£500 off", tl: "your next car with Union Motor Trade", code: "GOLD-500", b: "You’ve reached Gold with " + n + " cars sold. We’ll take £500 off the next car you buy from us. This replaces your Silver £250 ticket.", u: true, go: "buy" },
+      { id: id + "k1", perk: true, amt: 500, tier: "Gold", s: "Gold ticket: £500 off your next car", t: "£500 off", tl: "your next car with " + SITE.name, code: "GOLD-500", b: "You’ve reached Gold with " + n + " cars sold. We’ll take £500 off the next car you buy from us. This replaces your Silver £250 ticket.", u: true, go: "buy" },
       { id: id + "k2", perk: true, s: "Gold ticket: Retail Ready pack at half price", t: "50% off", tl: "the Retail Ready pack on every car you list", code: "RR-HALF", b: "Gold sellers get our Retail Ready pack at half price. It’s applied automatically on your offer letters.", u: true, go: "po" }];
     else M = [W("Welcome to Platinum, our highest tier", "With " + n + " cars sold, you’re one of our very best sellers. Thank you. Your new rewards are below, and your account manager will be in touch today."),
-      { id: id + "k1", perk: true, tk: "platinum", amt: 750, tier: "Platinum", s: "Platinum ticket: £750 off your next car", t: "£750 off", tl: "your next car with Union Motor Trade", code: "PLAT-750", b: "As a Platinum seller, we’ll take £750 off the next car you buy from us. This replaces your Gold £500 ticket.", u: true, go: "buy" },
+      { id: id + "k1", perk: true, tk: "platinum", amt: 750, tier: "Platinum", s: "Platinum ticket: £750 off your next car", t: "£750 off", tl: "your next car with " + SITE.name, code: "PLAT-750", b: "As a Platinum seller, we’ll take £750 off the next car you buy from us. This replaces your Gold £500 ticket.", u: true, go: "buy" },
       { id: id + "k2", perk: true, tk: "platinum", s: "Platinum ticket: free Retail Ready on every car", t: "Free", tl: "Retail Ready pack on every car you list", code: "RR-FREE", b: "No pack fee for you, ever. It’s applied automatically on your offer letters.", u: true, go: "po" },
       { id: id + "am", s: "Meet your account manager, Sophie", b: "Hi, I’m Sophie Reid, your account manager. Call or message me directly about any car you’re selling: 0113 496 0123 (sample). I’ll also check in before each listing goes live.", u: true, go: "ov" }];
     M.reverse().forEach(function (m) { addMail("seller", m); });
@@ -4461,7 +4462,7 @@
     o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "You’ve reached " + L); o.setAttribute("data-lenis-prevent", "");
     var st = "";
     for (var i = 0; i < 80; i++) { var z = Math.random() * 2.4 + 0.8; st += '<i style="left:' + (Math.random() * 100).toFixed(1) + "%;top:" + (Math.random() * 100).toFixed(1) + "%;width:" + z.toFixed(1) + "px;height:" + z.toFixed(1) + "px;animation-delay:" + (Math.random() * 2.6).toFixed(2) + 's"></i>'; }
-    o.innerHTML = '<div class="tup-neb n-' + lo + '"></div><div class="tup-sky">' + st + '</div><div class="tup-fl"></div><button type="button" class="tup-skip">Skip</button><div class="tup-in"><p class="tup-k">Sale contract signed · ' + n + ' cars sold</p><div class="tup-cw"><div class="tup-card tc-' + (from ? flo : "none") + '"><div class="tup-medal" aria-hidden="true">★</div><span class="tup-tn">' + (from || "Seller") + '</span><span class="tup-sub">' + (from ? "Trusted Seller" : "Union Motor Trade") + '</span></div></div><h2 class="tup-h">' + C.h + '</h2><p class="tup-p">' + C.p + '</p><ul class="tup-perks">' + t1[2].map(function (p) { return "<li>" + p + "</li>"; }).join("") + '</ul><div class="tup-nav"><button type="button" class="btn" data-tupm>See your rewards in Mail</button><button type="button" class="btn ghost" data-tupx>Continue</button></div></div>';
+    o.innerHTML = '<div class="tup-neb n-' + lo + '"></div><div class="tup-sky">' + st + '</div><div class="tup-fl"></div><button type="button" class="tup-skip">Skip</button><div class="tup-in"><p class="tup-k">Sale contract signed · ' + n + ' cars sold</p><div class="tup-cw"><div class="tup-card tc-' + (from ? flo : "none") + '"><div class="tup-medal" aria-hidden="true">★</div><span class="tup-tn">' + (from || "Seller") + '</span><span class="tup-sub">' + (from ? "Trusted Seller" : SITE.name) + '</span></div></div><h2 class="tup-h">' + C.h + '</h2><p class="tup-p">' + C.p + '</p><ul class="tup-perks">' + t1[2].map(function (p) { return "<li>" + p + "</li>"; }).join("") + '</ul><div class="tup-nav"><button type="button" class="btn" data-tupm>See your rewards in Mail</button><button type="button" class="btn ghost" data-tupx>Continue</button></div></div>';
     document.body.appendChild(o); document.body.classList.add("fsopen");
     var q = function (x) { return o.querySelector(x); }, card = q(".tup-card"), cw = q(".tup-cw");
     function at(ms, f) { T.push(setTimeout(f, ms)); }
@@ -4798,7 +4799,7 @@
       t = revTotals(),
       T = tierOf(tierCount());
     el.innerHTML =
-      '<a class="back" href="#profile" id="revback">Back to your profile</a><div class="rcpt"><div class="rc-h"><div><p class="muted small" style="margin:0">Union Motor Trade' +
+      '<a class="back" href="#profile" id="revback">Back to your profile</a><div class="rcpt"><div class="rc-h"><div><p class="muted small" style="margin:0">' + SITE.name +
       (T
         ? ' · <span class="tchip tier-' +
           T[0].toLowerCase() +
@@ -4994,7 +4995,7 @@
       amt = T.amt || RES_DEP;
     function head() {
       return (
-        '<p class="muted small" style="margin:0">Union Motor Trade · Secure payment</p><h2 style="margin:6px 0 4px">' +
+        '<p class="muted small" style="margin:0">' + SITE.name + ' · Secure payment</p><h2 style="margin:6px 0 4px">' +
         (K === "res"
           ? "Reserve the "
           : K === "bal"
@@ -5017,7 +5018,7 @@
               return (
                 '<div class="splitb"><b>One payment, split automatically</b><div class="row"><span>To the seller, held safely until handover</span><span>' +
                 gbp(sh) +
-                '</span></div><div class="row"><span>To Union Motor Trade: our service, the buyer fee and your extras' +
+                '</span></div><div class="row"><span>To ' + SITE.name + ': our service, the buyer fee and your extras' +
                 (myPur && myPur.res ? ", less your reservation" : "") +
                 "</span><span>" +
                 gbp(us) +
@@ -6667,7 +6668,7 @@
           return;
         }
         var c = {
-          ref: "UMT-" + (10000 + Math.floor(Math.random() * 89999)),
+          ref: SITE.refPrefix + "-" + (10000 + Math.floor(Math.random() * 89999)),
           a: F.a,
           car: F.c,
           w: F.w,
@@ -7245,7 +7246,7 @@
         var cs = ghCars().filter(function (x) {
             return x.k === S.car;
           })[0],
-          ref = "UMT-" + (10000 + Math.floor(Math.random() * 89999)),
+          ref = SITE.refPrefix + "-" + (10000 + Math.floor(Math.random() * 89999)),
           formal = !!(S.t[3] && S.formal && user);
         var promise = formal
           ? "We’ll acknowledge it within 3 working days and send our final response within 8 weeks at the latest. "
@@ -7310,7 +7311,7 @@
               "them",
               "Hi" +
                 (nm ? " " + nm : "") +
-                ", I’m Amira from Union Motor Trade." +
+                ", I’m Amira from " + SITE.name + "." +
                 (c.car
                   ? " I can see your " + c.car + " and everything on your case."
                   : "") +

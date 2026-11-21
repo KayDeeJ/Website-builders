@@ -1,3 +1,4 @@
+import { site } from '@/lib/site'
 import BlurText from '@/components/BlurText'
 import KeyHandover from '../KeyHandover'
 import DealStory from './DealStory'
@@ -9,7 +10,7 @@ export default function HomeView() {
     <>
 <div id="view-home" className="view">
   <div className="hero"><div className="scene handover" aria-hidden="true"><KeyHandover /></div><div className="wrap herogrid"><div className="heromain">
-    <Headline as="h1" parts={["What brings you to", { hl: "Union Motor Trade?" }]} />
+    <Headline as="h1" parts={["What brings you to", { hl: `${site.name}?` }]} />
     <BlurText trigger="load" animateBy="words" delay={30} className="sub" text="The dealer-backed marketplace connecting private car sellers with cash and finance buyers. Open to everyday drivers, not just the trade." />
     <form className="pcform" id="pc-home" noValidate><label>Your postcode<input id="pc-home-in" autoComplete="postal-code" placeholder="e.g. LS1 4AB" aria-describedby="pc-home-msg" /></label><CoralButton type="submit">See cars near me</CoralButton><p className="pcmsg" id="pc-home-msg" aria-live="polite"></p></form>
     <div className="fork">

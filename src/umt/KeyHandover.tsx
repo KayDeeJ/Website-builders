@@ -1,3 +1,4 @@
+import { site } from '@/lib/site'
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { reducedMotion, useShownKey } from './hooks'
@@ -79,7 +80,7 @@ function Fob() {
       <circle cx="-30" cy="0" r="13" fill="none" stroke="#C9C6D3" strokeWidth="4" />
       <rect x="-48" y="12" width="26" height="30" rx="7" fill="#FF5D5D" />
       <text x="-35" y="33" textAnchor="middle" fontFamily="Sora Variable, Sora, sans-serif" fontWeight="600" fontSize="16" fill="#1E1426">
-        U
+        {site.mark}
       </text>
       <rect x="-20" y="-16" width="58" height="32" rx="15" fill="#1E1426" />
       <rect x="-14" y="-12" width="44" height="8" rx="4" fill="#FFFFFF" opacity="0.14" />

@@ -1,3 +1,4 @@
+import { site } from '@/lib/site'
 import { Headline, TrackerFill } from '../ui'
 
 /* From the original Union Motor Trade markup, upgraded with React Bits. Ids and classes are hooks for the engine. */
@@ -8,7 +9,7 @@ export default function HowView() {
   <section><div className="wrap">
     <a className="back" href="#home">Back</a>
     <Headline parts={["How it works"]} />
-    <p className="lede">Union Motor Trade connects private sellers with buyers who pay cash or use finance. Where a purchase is on finance, we step in to handle the finance side. [Final wording to follow your legal advice.]</p>
+    <p className="lede">{site.name} connects private sellers with buyers who pay cash or use finance. Where a purchase is on finance, we step in to handle the finance side. [Final wording to follow your legal advice.]</p>
     <div className="cols">
       <div><h3>Cash purchase</h3><ul className="pts"><li>Buyer buys or reserves the car at its fixed price.</li><li>The car is inspected, and the buyer confirms.</li><li>Payment reaches the seller through a regulated payment route. [Provider to be confirmed.]</li><li>Delivery to your door or collection, then the change of keeper.</li></ul></div>
       <div><h3>Finance purchase</h3><ul className="pts"><li>Buyer applies for finance, shown with the total cost and any commission we may receive.</li><li>On approval, the lender pays out and any finance owed on the car is settled from the proceeds.</li><li>The car is inspected before the deal completes.</li><li>If the car fails inspection after approval, the buyer’s options are explained before anything is signed.</li></ul></div>
