@@ -11,6 +11,7 @@
 @import "./umt/legacy.css";
 @import "./umt/tierup.css";
 @import "./umt/rich.css";
+@import "./umt/pay.css";
 
 /* Only the React components generate utilities. The engine and the original markup use their own
    class names (e.g. "fixed" for a fixed-price note), which must not become Tailwind utilities. */

@@ -5014,6 +5014,23 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
       '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12.5h5M6 6l9-3 1.5 3"/></svg>',
     ICC =
       '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>';
+  var ICB =
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h18L12 4 3 10zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg>',
+    ICT =
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>',
+    BANKS = ["Barclays", "HSBC", "Lloyds", "NatWest", "Santander", "Nationwide", "Monzo", "Starling"];
+  /* The full balance is paid from the buyer's bank, never by card or wallet: card fees and
+     chargebacks don't suit a whole car. Cards and wallets stay for reservations, deposits and extras. */
+  function paySafe() {
+    return (
+      '<div class="safeb"><b>How we keep your money safe</b><ul>' +
+      "<li>Pay from a bank account in <b>your own name</b>. We can’t accept payments from anyone else.</li>" +
+      "<li>Your bank checks our account name before any money leaves (Confirmation of Payee).</li>" +
+      "<li>The seller’s share is held safely and only released after you’ve collected the car.</li>" +
+      "<li><b>We will never change our bank details by email, text or phone.</b> They only ever appear here, in your signed-in account. If anyone asks you to pay somewhere else, stop and call us.</li>" +
+      "</ul></div>"
+    );
+  }
   function payView() {
     var el = $("pay-body"),
       T = payTok;
@@ -5040,7 +5057,9 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
     var c = cars[T.i],
       nm = c.y + " " + c.mk + " " + c.md,
       method = null,
+      bank = null,
       K = T.kind || "res",
+      payRef = SITE.refPrefix + "-" + (T.i + 1) * 7 + String(T.amt || 0).slice(-3),
       amt = T.amt || RES_DEP;
     function head() {
       return (
@@ -5088,6 +5107,61 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
                 : "") +
               '. You can still cancel within 14 days of handover. <span class="todo">[Solicitor to confirm.]</span></p>'
             : '<p class="note" style="margin:0 0 16px">Your cash deposit for the finance agreement you’ve signed. The lender pays the rest.</p>') +
+        (K === "bal" ? balMethods() : walletMethods()) +
+        '<p class="pxerr" id="payerr" aria-live="polite"></p><button type="button" class="btn" id="paygo" style="width:100%">' +
+        payLabel() +
+        '</button><p class="muted small" style="margin:12px 0 0">Preview only: no payment is taken. <span class="todo">' +
+        (K === "bal"
+          ? "[Pay by bank (Open Banking), Confirmation of Payee and our real account details to be set up with the payment provider and bank.]"
+          : "[Payment provider to be connected. The official Apple Pay and Google Pay buttons come from the provider.]") +
+        "</span></p></div>";
+      wire();
+    }
+    function payLabel() {
+      if (K === "bal")
+        return method === "bank"
+          ? "Continue to " + (bank || "your bank")
+          : method === "transfer"
+            ? "I’ve sent the payment"
+            : "Pay " + gbp(amt);
+      return method === "apple"
+        ? "Pay " + gbp(amt) + " with Apple Pay"
+        : method === "google"
+          ? "Pay " + gbp(amt) + " with Google Pay"
+          : "Pay " + gbp(amt);
+    }
+    function balMethods() {
+      return (
+        '<p style="font-weight:600;margin:0 0 8px">Choose how to pay</p><div class="paym" role="group" aria-label="Payment method">' +
+        '<button type="button" class="wal bankm" data-pm="bank" aria-pressed="' +
+        (method === "bank") +
+        '">' +
+        ICB +
+        '<span>Pay by bank <small>Recommended · approve in your banking app, arrives instantly</small></span></button>' +
+        '<button type="button" class="wal bankm" data-pm="transfer" aria-pressed="' +
+        (method === "transfer") +
+        '">' +
+        ICT +
+        "<span>Bank transfer <small>Faster Payments or CHAPS from your online banking</small></span></button></div>" +
+        '<p class="muted small" style="margin:-2px 0 14px">Cards, Apple Pay and Google Pay can’t be used for the full price of a car. You can still use them for reservations, deposits and extras.</p>' +
+        (method === "bank"
+          ? '<p style="font-weight:600;margin:4px 0 8px">Choose your bank</p><div class="bankpick" role="group" aria-label="Your bank">' +
+            BANKS.map(function (b) {
+              return '<button type="button" data-bk="' + b + '" aria-pressed="' + (bank === b) + '">' + b + "</button>";
+            }).join("") +
+            '</div><p class="muted small" style="margin:0 0 14px">You’ll approve the payment in your own banking app. We never see your login details.</p>'
+          : "") +
+        (method === "transfer"
+          ? '<div class="bankd"><div class="row"><span>Account name</span><b>' + SITE.name + ' Ltd</b></div>' +
+            '<div class="row"><span>Sort code</span><b>00-00-00</b></div><div class="row"><span>Account number</span><b>00000000</b></div>' +
+            '<div class="row"><span>Amount</span><b>' + gbp(amt) + '</b></div><div class="row"><span>Reference (required)</span><b>' + payRef + "</b></div>" +
+            '<p class="small" style="margin:10px 0 0">Sample details for preview. Use <b>Faster Payments</b> if your bank allows this amount, or <b>CHAPS</b> for same-day payment of larger sums. If your bank says the name doesn’t match, stop and call us.</p></div>'
+          : "") +
+        paySafe()
+      );
+    }
+    function walletMethods() {
+      return (
         '<p style="font-weight:600;margin:0 0 8px">Choose how to pay</p><div class="paym" role="group" aria-label="Payment method">' +
         '<button type="button" class="wal" data-pm="apple" aria-pressed="' +
         (method === "apple") +
@@ -5110,19 +5184,23 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
           ? '<p style="margin:0 0 10px"><button type="button" class="btn ghost" id="cfill" style="padding:8px 16px">Fill with an example card (preview)</button> <button type="button" class="lnkb" id="cdecl">Example declined card (preview)</button></p><form class="cardf" id="cardf" novalidate autocomplete="off"><label class="full">Card number<input id="cn" inputmode="numeric" autocomplete="off" placeholder="1234 5678 9012 3456" maxlength="23"></label><label>Expiry date<input id="ce" inputmode="numeric" autocomplete="off" placeholder="MM/YY" maxlength="5"></label><label>Security code<input id="cc" inputmode="numeric" autocomplete="off" placeholder="CVC" maxlength="4"></label><label class="full">Name on card<input id="cnm" autocomplete="off" value="' +
             esc(fullName()) +
             '"></label><label class="full">Billing postcode<input id="cpc" autocomplete="off" style="text-transform:uppercase"></label></form><p class="muted small" style="margin:-4px 0 12px">Preview only: what you type here isn’t saved or sent anywhere. <span class="todo">[In the live service these fields come from the payment provider’s secure form.]</span></p>'
-          : "") +
-        '<p class="pxerr" id="payerr" aria-live="polite"></p><button type="button" class="btn" id="paygo" style="width:100%">' +
-        (method === "apple"
-          ? "Pay " + gbp(amt) + " with Apple Pay"
-          : method === "google"
-            ? "Pay " + gbp(amt) + " with Google Pay"
-            : "Pay " + gbp(amt)) +
-        '</button><p class="muted small" style="margin:12px 0 0">Preview only: no payment is taken. <span class="todo">[Payment provider to be connected. The official Apple Pay and Google Pay buttons come from the provider.]</span></p></div>';
+          : "")
+      );
+    }
+    function wire() {
       el.querySelectorAll("[data-pm]").forEach(function (b) {
         b.onclick = function () {
           method = b.dataset.pm;
           draw();
           if (method === "card") $("cn").focus();
+        };
+      });
+      el.querySelectorAll("[data-bk]").forEach(function (b) {
+        b.onclick = function () {
+          bank = b.dataset.bk;
+          draw();
+          var f = el.querySelector('[data-bk="' + bank + '"]');
+          if (f) f.focus();
         };
       });
       if ($("cn")) {
@@ -5164,6 +5242,18 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
       $("paygo").onclick = function () {
         if (!method) {
           $("payerr").textContent = "Choose how you’d like to pay.";
+          return;
+        }
+        if (method === "bank") {
+          if (!bank) {
+            $("payerr").textContent = "Choose your bank.";
+            return;
+          }
+          bankApprove();
+          return;
+        }
+        if (method === "transfer") {
+          transferWait();
           return;
         }
         if (method === "card") {
@@ -5215,6 +5305,32 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
         }
         processing();
       };
+    }
+    function bankApprove() {
+      el.innerHTML =
+        '<div class="paybox payload" role="status" aria-live="polite"><div class="spin" aria-hidden="true"></div><h2 style="margin:18px 0 6px">Approve in your ' +
+        esc(bank) +
+        ' app</h2><p class="muted" style="margin:0 0 6px">We’ve asked ' +
+        esc(bank) +
+        " to pay <b>" +
+        gbp(amt) +
+        "</b> to <b>" +
+        SITE.name +
+        " Ltd</b>, reference <b>" +
+        payRef +
+        '</b>. Check those details in your app before you approve.</p><p class="muted small" style="margin:0 0 18px">Nothing leaves your account until you approve it.</p><p style="margin:0"><button type="button" class="btn" id="bkok">I’ve approved it (preview)</button> <button type="button" class="btn ghost" id="bkx">Cancel</button></p></div>';
+      $("bkok").onclick = processing;
+      $("bkx").onclick = draw;
+    }
+    function transferWait() {
+      el.innerHTML =
+        '<div class="paybox payload" role="status" aria-live="polite"><div class="spin" aria-hidden="true"></div><h2 style="margin:18px 0 6px">Watching for your payment</h2><p class="muted" style="margin:0 0 6px">We’ll confirm by email as soon as <b>' +
+        gbp(amt) +
+        "</b> with reference <b>" +
+        payRef +
+        '</b> arrives. Faster Payments usually arrive within 2 hours; CHAPS the same working day.</p><p class="muted small" style="margin:0 0 18px">The car stays held for you while we wait. Payments from an account in someone else’s name are returned.</p><p style="margin:0"><button type="button" class="btn" id="trok">Payment arrives (preview)</button> <button type="button" class="btn ghost" id="trx">Back</button></p></div>';
+      $("trok").onclick = processing;
+      $("trx").onclick = draw;
     }
     function processing() {
       el.innerHTML =
@@ -5977,7 +6093,7 @@ var SITE = window.__umtSite || { name: "Union Motor Trade", mark: "U", refPrefix
           ? "It takes a few minutes, and most decisions come back the same day."
           : "Pay " +
             gbp(P.total) +
-            " securely by card, Apple Pay or Google Pay.") +
+            " securely from your bank account, by Pay by bank or bank transfer.") +
         '</p><a class="btn" href="' +
         (fin ? "#fin" : "#pay") +
         '">' +
