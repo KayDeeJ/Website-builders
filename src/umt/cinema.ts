@@ -10,6 +10,7 @@
 import { useEffect } from 'react'
 import gsap from 'gsap'
 import { reducedMotion } from './hooks'
+import { pageOf, pages } from './receptionist/knowledge'
 
 let busy = false
 const isCar = (href: string) => /^#car-\d+$/.test(href)
@@ -28,7 +29,10 @@ function makeCurtain() {
   }
   const edge = document.createElement('span')
   edge.className = 'curtain-edge'
-  c.append(mark, edge)
+  // The name of the screen being opened, set on each sweep.
+  const label = document.createElement('div')
+  label.className = 'curtain-label'
+  c.append(mark, label, edge)
   document.body.appendChild(c)
   return c
 }
@@ -39,7 +43,18 @@ function curtainTo(href: string) {
   const c = document.querySelector<HTMLElement>('.curtain') ?? makeCurtain()
   const logo = c.querySelector('.curtain-logo')
   const edge = c.querySelector('.curtain-edge')
-  gsap.killTweensOf([c, logo, edge])
+  const label = c.querySelector<HTMLElement>('.curtain-label')
+  if (label) {
+    label.replaceChildren(
+      ...Array.from(pages[pageOf(href)].title).map((ch) => {
+        const s = document.createElement('span')
+        s.textContent = ch === ' ' ? '\u00a0' : ch
+        return s
+      }),
+    )
+  }
+  const letters = label ? Array.from(label.children) : []
+  gsap.killTweensOf([c, logo, edge, label, ...letters])
   const tl = gsap.timeline({
     onComplete: () => {
       gsap.set(c, { visibility: 'hidden' })
@@ -52,11 +67,19 @@ function curtainTo(href: string) {
     .set(edge, { left: '0%', autoAlpha: 1 })
     .to(c, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.42, ease: 'expo.in' }, 0)
     .to(edge, { left: '100%', duration: 0.42, ease: 'expo.in' }, 0)
+    .set(label, { autoAlpha: 1 })
+    .set(letters, { autoAlpha: 0, yPercent: 110 })
     .to(logo, { autoAlpha: 1, scale: 1, duration: 0.3, ease: 'power2.out' }, 0.22)
-    .call(() => {
-      location.hash = href
-    })
-    .to(logo, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: 'power2.in' }, '+=0.12')
+    .to(letters, { autoAlpha: 1, yPercent: 0, duration: 0.34, stagger: { amount: 0.18 }, ease: 'expo.out' }, 0.24)
+    .call(
+      () => {
+        location.hash = href
+      },
+      undefined,
+      0.5,
+    )
+    .to(logo, { autoAlpha: 0, scale: 1.04, duration: 0.25, ease: 'power2.in' }, 0.72)
+    .to(letters, { autoAlpha: 0, yPercent: -80, duration: 0.25, stagger: 0.008, ease: 'power2.in' }, '<')
     .set(edge, { left: '0%' })
     .to(c, { clipPath: 'inset(0% 0% 0% 100%)', duration: 0.6, ease: 'expo.out' }, '>-0.05')
     .to(edge, { left: '100%', duration: 0.6, ease: 'expo.out', autoAlpha: 0 }, '<')

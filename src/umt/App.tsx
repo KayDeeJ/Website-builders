@@ -4,6 +4,8 @@ import { useCinema } from './cinema'
 import { useTactile } from './tactile'
 import { useEngineFx } from './fx'
 import { useSiteMotion } from './hooks'
+import { useArrivals } from './arrive'
+import Receptionist from './receptionist/Receptionist'
 import Intro from './Intro'
 import QuickBar from './QuickBar'
 import Footer from './markup/Footer'
@@ -46,6 +48,7 @@ declare global {
 export default function App() {
   useSiteMotion()
   useEngineFx()
+  useArrivals()
   useCinema()
   useTactile()
 
@@ -87,6 +90,7 @@ export default function App() {
         <ProfileView />
       </main>
       <Footer />
+      <Receptionist />
       <Intro />
     </>
   )
