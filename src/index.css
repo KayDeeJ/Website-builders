@@ -137,6 +137,12 @@ h1 .split-parent > *, h2 .split-parent > * { vertical-align: top; }
   background: radial-gradient(70% 60% at 50% 45%, #3A1E57 0%, #2B1640 45%, #170A22 100%); }
 .curtain-logo { width: min(320px, 64vw); filter: drop-shadow(0 10px 40px rgba(255, 93, 93, .25)); }
 .curtain-logo svg { width: 100%; height: auto; display: block; }
+/* The destination's name rises under the logo, letter by letter. The edge is absolute, so the grid
+   only stacks the logo and the name. */
+.curtain { align-content: center; gap: 22px; }
+.curtain-label { display: flex; overflow: hidden; padding: 0 0 .12em; color: #FFD9D2; font: 600 clamp(1.05rem, 2.4vw, 1.5rem) var(--display);
+  letter-spacing: .04em; visibility: hidden; }
+.curtain-label span { display: inline-block; }
 .curtain-edge { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1.5px;
   background: linear-gradient(180deg, transparent, #FF9A8A 20%, #FF5D5D 50%, #FF9A8A 80%, transparent); box-shadow: 0 0 24px 4px rgba(255, 93, 93, .55); }
 .flight { overflow: hidden; box-sizing: border-box; }
@@ -219,3 +225,14 @@ body.lens-on .car a.pl, body.lens-on .fork a.fork-link { cursor: none; }
 }
 .grid.gain-grid .car { scroll-snap-align: start; }
 @media (max-width: 640px) { .grid.gain-grid { grid-auto-columns: 78%; } }
+
+/* ---------- Light/dark switch (src/umt/themeShift.ts) ---------- */
+/* The new theme is revealed by a circle from the toggle; the browser's default cross-fade is off. */
+.theme-shift::view-transition-old(root),
+.theme-shift::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+.theme-shift::view-transition-old(root) { z-index: 1; }
+.theme-shift::view-transition-new(root) { z-index: 2; }
+/* Fallback without View Transitions: colours ease across instead of snapping. */
+.theme-fading, .theme-fading *, .theme-fading *::before, .theme-fading *::after {
+  transition: background-color .55s ease, color .55s ease, border-color .55s ease, fill .55s ease, stroke .55s ease, box-shadow .55s ease !important;
+}

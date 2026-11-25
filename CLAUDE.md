@@ -53,6 +53,15 @@ Vite + React 19 + TypeScript, Tailwind CSS v4 (theme + utilities only, no prefli
   morph), `src/umt/tactile.ts` (magnetic buttons, View lens, glare, counting prices), `src/umt/views/DealStory.tsx`.
 - `src/umt/fx.ts`: premium motion layer over engine-built screens (screen transitions, sliding car grid, counting
   finance figures, rolling countdown). It never edits engine text the engine reads back.
+- `src/umt/arrive.ts`: every screen's entrance (back link, then blocks rise; card rows tip up, list points slide in;
+  below-the-fold pieces arrive on scroll). Skips anything with motion of its own (headings, Reveal, tracker, grid).
+- Page switches: `cinema.ts` curtain also spells out the destination's name (titles from `receptionist/knowledge.ts`).
+- Receptionist: `src/umt/receptionist/` — Ruby, a floating front desk (original SVG face that blinks, glances at the
+  pointer and smiles). Greets on each screen, answers from the site's own content (`knowledge.ts`, scripted, no
+  backend) and links to screens. She replaces the engine's floating `#ghb` button (hidden by CSS, kept as the hook):
+  "Talk to a person" clicks it to open the engine's help desk.
+- Light/dark switch: `src/umt/themeShift.ts` takes the `#theme` click first and runs the engine's switch inside a View
+  Transition, revealing the new theme as a circle from the toggle (cross-fade fallback; instant under reduced motion).
 - Tailwind only scans `src/components` and the new React files: engine class names (e.g. `.fixed`) must never become
   utilities.
 
