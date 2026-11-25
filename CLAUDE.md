@@ -60,6 +60,8 @@ Vite + React 19 + TypeScript, Tailwind CSS v4 (theme + utilities only, no prefli
   pointer and smiles). Greets on each screen, answers from the site's own content (`knowledge.ts`, scripted, no
   backend) and links to screens. She replaces the engine's floating `#ghb` button (hidden by CSS, kept as the hook):
   "Talk to a person" clicks it to open the engine's help desk.
+- Light/dark switch: `src/umt/themeShift.ts` takes the `#theme` click first and runs the engine's switch inside a View
+  Transition, revealing the new theme as a circle from the toggle (cross-fade fallback; instant under reduced motion).
 - Tailwind only scans `src/components` and the new React files: engine class names (e.g. `.fixed`) must never become
   utilities.
 

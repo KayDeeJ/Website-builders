@@ -5,6 +5,7 @@ import { useTactile } from './tactile'
 import { useEngineFx } from './fx'
 import { useSiteMotion } from './hooks'
 import { useArrivals } from './arrive'
+import { useThemeShift } from './themeShift'
 import Receptionist from './receptionist/Receptionist'
 import Intro from './Intro'
 import QuickBar from './QuickBar'
@@ -49,6 +50,7 @@ export default function App() {
   useSiteMotion()
   useEngineFx()
   useArrivals()
+  useThemeShift()
   useCinema()
   useTactile()
 

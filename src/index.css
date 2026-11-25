@@ -225,3 +225,14 @@ body.lens-on .car a.pl, body.lens-on .fork a.fork-link { cursor: none; }
 }
 .grid.gain-grid .car { scroll-snap-align: start; }
 @media (max-width: 640px) { .grid.gain-grid { grid-auto-columns: 78%; } }
+
+/* ---------- Light/dark switch (src/umt/themeShift.ts) ---------- */
+/* The new theme is revealed by a circle from the toggle; the browser's default cross-fade is off. */
+.theme-shift::view-transition-old(root),
+.theme-shift::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+.theme-shift::view-transition-old(root) { z-index: 1; }
+.theme-shift::view-transition-new(root) { z-index: 2; }
+/* Fallback without View Transitions: colours ease across instead of snapping. */
+.theme-fading, .theme-fading *, .theme-fading *::before, .theme-fading *::after {
+  transition: background-color .55s ease, color .55s ease, border-color .55s ease, fill .55s ease, stroke .55s ease, box-shadow .55s ease !important;
+}
